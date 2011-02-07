@@ -1,0 +1,160 @@
+h1. Cake DJJob Plugin
+
+Quick and easy job queues, based on delayed_job
+
+h2. Background
+
+"CakePackages":http://github.com/josegonzalez/cakepackages is the type of site that would do well with background processes. Rather than try to build - and fail - a job/worker system, I set out to wrap an existing system.
+
+I am aware of a few plugins for cakephp, notably the "queue":https://github.com/davidpersson/queue plugin by David Persson, and the "cron-mailer":https://github.com/kalt/cron-mailer plugin by Pierre-Emmanuel Fringant. However, I don't wish to run and maintain yet another service, and my cron tasks aren't email-based at all. The other thing was the lack of documentation for David's plugin, and I am hesitant to familiarize myself with so many tools at once.
+
+At "SeatGeek":http://seatgeek.com, we use a "PHP port":http://github.com/seatgeek/djjob of "delayed_job":https://github.com/collectiveidea/delayed_job, which works very well in production. It's a neat little set of classes that abstracts away most of the pain of creating new jobs and workers. Unfortunately, the only system I've ever used it in was Symfony (you'll notice we include a sample Symfony task with the package).
+
+So here this is, Cake DJJob. Use it and abuse it to create Jobs/workers whenever necessary :)
+
+h2. Requirements
+
+* CakePHP 1.3
+* Patience
+* PHP 5
+* PDO (Ships with PHP >= 5.1)
+* (Optional) PCNTL library
+
+h2. Installation
+
+You are required to install both @djjob@ and @cake_djjob@.
+
+h3. DJJob Installation
+
+_[Manual]_
+
+# Download this: http://github.com/seatgeek/djjob/zipball/master
+# Unzip that download.
+# Copy the resulting folder to app/plugins
+# Rename the folder you just copied to @djjob/vendors@
+
+_[GIT Submodule]_
+
+In your app directory type:
+<pre><code>git submodule add git://github.com/seatgeek/djjob.git plugins/djjob/vendors
+git submodule init
+git submodule update
+</code></pre>
+
+_[GIT Clone]_
+
+In your plugin directory type
+<pre><code>git clone git://github.com/seatgeek/djjob.git djjob/vendors</code></pre>
+
+h3. Cake DJJob Installation
+
+_[Manual]_
+
+# Download this: http://github.com/josegonzalez/cake_djjob/zipball/master
+# Unzip that download.
+# Copy the resulting folder to app/plugins
+# Rename the folder you just copied to @cake_djjob@
+
+_[GIT Submodule]_
+
+In your app directory type:
+<pre><code>git submodule add git://github.com/josegonzalez/cake_djjob.git plugins/cake_djjob
+git submodule init
+git submodule update
+</code></pre>
+
+_[GIT Clone]_
+
+In your plugin directory type
+<pre><code>git clone git://github.com/josegonzalez/cake_djjob.git cake_djjob</code></pre>
+
+h2. Usage
+
+h3. Creating New Jobs
+
+You can create new jobs in the @libs/jobs@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @cake_djjob@ plugin contains a @CakeDjjob_TestJob@ in @libs/jobs/test_job.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
+
+Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. For example, an application's @EmailJob@ might be composed as follows:
+
+<pre><code><?php
+class EmailJob extends CakeJob {
+
+    function perform() {
+        $this->out('Some debug output');
+
+        // More complex email stuff here...
+        // More work involving some api...
+
+        $this->out("Some metrics");
+    }
+
+}
+?>
+</code></pre>
+
+Extending the @CakeJob@ also allows the usage of the following methods:
+
+* @loadModel()@
+** Works exactly as Controller::loadModel() works
+* @out()@
+** Outputs messages to standard out
+* @err()@
+** Outputs error messages to standard error
+* @nl()@
+** Outputs a new line to standard out
+* @hr()@
+** Outputs a horizontal rule to standard out
+
+By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
+
+h3. Running Jobs
+
+Included with this plugin is a task to run jobs.
+
+<pre><code>cake worker run</code></pre>
+
+The above statement will run a single worker on the default queue forever. It can be added to your cron or by some other process manager such as "God":http://god.rubyforge.org/. The following params are available for the worker:
+
+* -connection <config>
+** set db config <config>. default config: default
+* -type <name>
+** pdo name for connection <type>. default type: mysql
+* -queue <name>
+** queue <name> to pull jobs from. default queue: default
+* -count <number>
+** run <number> of jobs to run before exiting (0 for unlimited). default count: 0
+* -sleep <name>
+** sleep <number> seconds after finding no new jobs. default seconds: 5
+* -max <number>
+** max <number> of retries for a given job. default retries: 5
+
+h2. TODO
+
+* Behavior/Task to allow queueing of new jobs from Models/Shells
+* Allow alternative methods of plugin prefixing
+* Sample EmailJob based off of CakePHP's EmailComponent
+* Screencast
+* Unit Tests
+* Better handling of base CakeJob variables
+
+h2. License
+
+Copyright (c) 2011 Jose Diaz-Gonzalez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
