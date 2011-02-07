@@ -107,6 +107,30 @@ Extending the @CakeJob@ also allows the usage of the following methods:
 
 By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
 
+h3. Enqueuing Jobs
+
+Currently, CakeDJJob only allows users to enqueue Jobs from a Controller/Component. This will be remedied in the future.
+
+For now, you can attach the @CakeDjjob@ Component to your controller like so:
+
+<pre><code><?php
+class UsersController extends AppController {
+    var $components = array('CakeDjjob.CakeDjjob');
+
+    function forgot_password() {
+        if ($user_id = $this->User->forgot($this->data)) {
+            App::import('Lib', 'ForgotPasswordJob');
+            $this->CakeDjjob->enqueue(new ForgotPasswordJob($user_id));
+            $this->Session->setFlash('You will shortly be sent a password reset email :)');
+        } else {
+            $this->Session->setFlash('There is no such email in our system. Please try again.');
+        }
+    }
+}
+?></code></pre>
+
+Note that you'll need a @jobs@ table just like the one included with @djjob@. A @cake_schema@ file is forthcoming.
+
 h3. Running Jobs
 
 Included with this plugin is a task to run jobs.
