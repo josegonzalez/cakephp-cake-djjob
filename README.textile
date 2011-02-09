@@ -108,15 +108,17 @@ class EmailJob extends CakeJob {
 
 Extending the @CakeJob@ also allows the usage of the following methods:
 
-* @loadModel()@
+* @loadModel($modelClass, $id = null)@
 ** Works exactly as Controller::loadModel() works
-* @out()@
+* @loadComponent($componentClass)@
+** Loads, initializes, and attaches a Component
+* @out($message = null, $newlines = 1)@
 ** Outputs messages to standard out
-* @err()@
+* @err($message = null, $newlines = 1)@
 ** Outputs error messages to standard error
-* @nl()@
+* @nl($multiplier = 1, $print = false)@
 ** Outputs a new line to standard out
-* @hr()@
+* @hr($newlines = 0)@
 ** Outputs a horizontal rule to standard out
 
 By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
@@ -165,6 +167,8 @@ The above statement will run a single worker on the default queue forever. It ca
 ** sleep <number> seconds after finding no new jobs. default seconds: 5
 * -max <number>
 ** max <number> of retries for a given job. default retries: 5
+* -debug <number>
+** debug <level> to set for worker. default level: 0
 
 h2. TODO
 
