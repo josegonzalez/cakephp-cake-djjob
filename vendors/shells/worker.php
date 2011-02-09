@@ -48,6 +48,7 @@ class WorkerShell extends Shell {
     var $_count = 0;
     var $_sleep = 5;
     var $_max   = 5;
+    var $_debug = 0;
 
 /**
  * Override initialize
@@ -77,6 +78,15 @@ class WorkerShell extends Shell {
         }
         if (!empty($this->params['max'])) {
             $this->_max     = $this->params['max'];
+        }
+        if (!empty($this->params['debug'])) {
+            if ($this->params['debug'] == 'false') {
+                $this->params['debug'] = 0;
+            }
+            if ($this->params['debug'] == 'true') {
+                $this->params['debug'] = 1;
+            }
+            $this->_debug   = (int) $this->params['debug'];
         }
 
         if (!empty($this->params['connection'])) {
@@ -122,6 +132,7 @@ class WorkerShell extends Shell {
     }
 
     function run() {
+        Configure::write('debug', $this->_debug);
         $worker = new DJWorker(array(
             "queue" => $this->_queue,
             "count" => $this->_count,
@@ -166,6 +177,11 @@ Params:
     -max <number>
         max <number> of retries for a given job.
         default retries: {$this->_max}
+
+    -debug <boolean>
+        set debug level dynamically for running jobs
+        default value: {$this->_debug}
+        valid values: true, false, 0, 1, 2
 
 Commands:
 
