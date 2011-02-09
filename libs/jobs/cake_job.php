@@ -105,7 +105,7 @@ class CakeJob extends Object {
  * @param integer $newlines Number of newlines to append
  * @return integer Returns the number of bytes returned from writing to stdout.
  */
-    public function out($message = null, $newlines = 1) {
+    function out($message = null, $newlines = 1) {
         if (is_array($message)) {
             $message = implode($this->nl(), $message);
         }
@@ -134,7 +134,7 @@ class CakeJob extends Object {
  * @param boolean $newline If true, the outputs gets an added newline.
  * @return integer Returns the number of bytes output to stdout.
  */
-    public function stdout($string, $newline = true) {
+    function stdout($string, $newline = true) {
         if (empty($this->_stdout)) {
             $this->_stdout = fopen('php://stdout', 'w');
         }
@@ -166,7 +166,7 @@ class CakeJob extends Object {
  * @param integer $multiplier Number of times the linefeed sequence should be repeated
  * @return string
  */
-    public function nl($multiplier = 1, $print = false) {
+    function nl($multiplier = 1, $print = false) {
         if ($print) return $this->stdout(str_repeat("\n", $multiplier), false);
         return str_repeat("\n", $multiplier);
     }
@@ -176,7 +176,7 @@ class CakeJob extends Object {
  *
  * @param integer $newlines Number of newlines to pre- and append
  */
-    public function hr($newlines = 0) {
+    function hr($newlines = 0) {
         $this->out(null, $newlines);
         $this->out('---------------------------------------------------------------');
         $this->out(null, $newlines);
