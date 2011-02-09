@@ -92,7 +92,7 @@ class EmailJob extends CakeJob {
             'to' => 'email@example.com',
             'from' => 'noreply@example.com',
             'subject' => 'Daily Post Statistics',
-            'replyTo' => 'noreply@example.com'
+            'replyTo' => 'noreply@example.com',
             'template' => null,
             'sendAs' => 'both',
         ));

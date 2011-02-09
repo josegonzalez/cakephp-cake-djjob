@@ -18,7 +18,7 @@ class CakeDjjob_TestJob extends CakeJob {
             'to' => 'postmaster@localhost',
             'from' => 'noreply@example.com',
             'subject' => 'Cake SMTP test',
-            'replyTo' => 'noreply@example.com'
+            'replyTo' => 'noreply@example.com',
             'template' => null,
             'sendAs' => 'both',
         ));
