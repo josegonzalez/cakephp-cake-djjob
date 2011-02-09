@@ -41,6 +41,13 @@ class CakeJob extends Object {
     var $_persistModel = false;
 
 /**
+ * Internal reference to controller
+ *
+ * @var Controller
+ **/
+    var $_controller = null;
+
+/**
  * Loads and instantiates models required by this controller.
  * If Controller::$persistModel; is true, controller will cache model instances on first request,
  * additional request will used cached models.
@@ -96,6 +103,87 @@ class CakeJob extends Object {
         return true;
     }
 
+/**
+ * Loads a Controller and attaches the appropriate models
+ *
+ * @param string $controllerClass Name of model class to load
+ * @param array $modelNames Array of models to load onto controller
+ * @return mixed true when single controller found and instance created, error returned if controller not found.
+ * @access public
+ **/
+    function loadController($controllerClass = 'CakeDjjob.CakeDjjobDummies', $modelNames = array()) {
+        list($plugin, $controllerClass) = pluginSplit($controllerClass, true, null);
+
+        $loaded = false;
+        if ($plugin . $controllerClass == 'CakeDjjob.CakeDjjobDummies') {
+            if (!empty($this->_controller)) {
+                $loaded = true;
+            }
+        } else {
+            if (!empty($this->{$controllerClass})) {
+                $loaded = true;
+            }
+        }
+
+        if ($loaded) {
+          $message = sprintf("%s Controller", $controllerClass);
+          if (!empty($plugin)) {
+              $message .= sprintf(" in %s Plugin", substr($plugin, 0, -1));
+          }
+          throw new Exception(sprintf("%s is already loaded", $message));
+        }
+
+        if (!class_exists('Controller')) {
+            App::import('Core', 'Controller');
+        }
+        if (!class_exists($controllerClass)) {
+            App::import('Controller', $plugin . $controllerClass);
+        }
+
+        $controllerClassName = $controllerClass . 'Controller';
+        $controller =& new $controllerClassName();
+        $controller->constructClasses();
+        $controller->startupProcess();
+
+        foreach ($modelNames as $modelName) {
+            $controller->loadModel($modelName);
+        }
+
+        if ($plugin . $controllerClass == 'CakeDjjob.Dummy') {
+            $this->_controller = &$controller;
+        } else {
+            $this->{$controllerClass} = &$controller;
+        }
+        return true;
+    }
+
+/**
+* Loads a Component
+ *
+ * @param string $componentClass Name of model class to load
+ * @return void
+ * @access public
+ **/
+    function loadComponent($componentClass) {
+        App::import('Component', $componentClass);
+        list($plugin, $componentClass) = pluginSplit($componentClass, true, null);
+        $componentClassName = $componentClass . 'Component';
+        $component =& new $componentClassName(null);
+
+        if (empty($this->_controller)) {
+            $this->loadController();
+        }
+
+        if (method_exists($component, 'initialize')) {
+            $component->initialize($this->_controller);
+        }
+
+        if (method_exists($component, 'startup')) {
+            $component->startup($this->_controller);
+        }
+
+        $this->{$componentClass} = &$component;
+    }
 
 /**
  * Outputs a single or multiple messages to stdout. If no parameters
