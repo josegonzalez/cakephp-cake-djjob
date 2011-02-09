@@ -82,9 +82,23 @@ class EmailJob extends CakeJob {
     function perform() {
         $this->out('Some debug output');
 
-        // More complex email stuff here...
-        // More work involving some api...
+        // Using models
+        $this->loadModel('Post');
+        $count = $this->Post->find('count');
 
+        // Complex email stuff here...
+        $this->loadComponent('Email');
+        $this->Email->_set(array(
+            'to' => 'email@example.com',
+            'from' => 'noreply@example.com',
+            'subject' => 'Daily Post Statistics',
+            'replyTo' => 'noreply@example.com'
+            'template' => null,
+            'sendAs' => 'both',
+        ));
+        $this->Email->send(sprintf("There are %n posts", $count));
+
+        // More work involving some api...
         $this->out("Some metrics");
     }
 
