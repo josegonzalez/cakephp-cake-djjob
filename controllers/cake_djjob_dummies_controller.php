@@ -7,7 +7,7 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the below copyright notice.
  *
- * @copyright     Copyright 2010, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
+ * @copyright     Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
  * @link          http://github.com/josegonzalez/cake_djjob
  * @package       cake_djjob
  * @subpackage    cake_djjob.controller
