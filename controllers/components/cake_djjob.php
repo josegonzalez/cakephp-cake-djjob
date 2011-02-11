@@ -1,11 +1,25 @@
 <?php
-App::import('Lib', 'CakeDjjob.cake_job', array(
-    'file' => 'jobs' . DS . 'cake_job.php',
-));
-App::import('Vendor', 'Djjob.DJJob', array(
-    'file' => 'DJJob.php',
-));
-
+if (!class_exists('CakeJob')) {
+    App::import('Lib', 'CakeDjjob.cake_job', array(
+        'file' => 'jobs' . DS . 'cake_job.php',
+    ));
+}
+if (!class_exists('DJJob')) {
+    App::import('Vendor', 'Djjob.DJJob', array(
+        'file' => 'DJJob.php',
+    ));
+}
+/**
+ * CakeDjjob Component
+ *
+ * Wrapper around DJJob library
+ *
+ * @copyright     Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
+ * @link          http://github.com/josegonzalez/cake_djjob
+ * @package       cake_djjob
+ * @subpackage    cake_djjob.controller.components
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 class CakeDjjobComponent extends Object {
 
     var $settings = array(
@@ -73,6 +87,17 @@ class CakeDjjobComponent extends Object {
  */
     function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
         return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+    }
+
+/**
+ * Returns an array containing the status of a given queue
+ *
+ * @param string $queue
+ * @return array
+ * @author Jose Diaz-Gonzalez
+ **/
+    function status($queue = "default") {
+        return DJJob::status($queue);
     }
 
 }
