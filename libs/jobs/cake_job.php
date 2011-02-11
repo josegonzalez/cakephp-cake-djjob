@@ -6,46 +6,20 @@
  * @author Jose Diaz-Gonzalez
  */
 class CakeJob extends Object {
-/**
- * Standard output stream.
- *
- * @var filehandle
- * @access public
- */
-    var $_stdout;
 
 /**
- * Standard error stream.
+ * Internal array
  *
- * @var filehandle
- * @access public
- */
-    var $_stderr;
-
-/**
- * An array containing the class names of the models this controller uses.
+ * May contains the following keys
+ *  stdout:         filehandle  Standard output stream.
+ *  stderr:         filehandle  Standard error stream.
+ *  modelNames:     array       An array containing the class names of the models this controller uses.
+ *  persistModel:   boolean     Used to create cached instances of models a controller uses.
+ *  controller:     object      Internal reference to a dummy controller
  *
- * @var array Array of model objects.
- * @access public
- */
-    var $_modelNames = array();
-
-/**
- * Used to create cached instances of models a controller uses.
- * When set to true, all models related to the controller will be cached.
- * This can increase performance in many cases.
- *
- * @var boolean
- * @access public
- */
-    var $_persistModel = false;
-
-/**
- * Internal reference to controller
- *
- * @var Controller
+ * @var string
  **/
-    var $_controller = null;
+    var $_internals = array();
 
 /**
  * Loads and instantiates models required by this controller.
@@ -64,12 +38,12 @@ class CakeJob extends Object {
         $object = null;
         list($plugin, $modelClass) = pluginSplit($modelClass, true, null);
 
-        if ($this->_persistModel === true) {
+        if (isset($this->_internals['persistModel']) && $this->_internals['persistModel'] === true) {
             $cached = $this->_persist($modelClass, null, $object);
         }
 
         if (($cached === false)) {
-            $this->_modelNames[] = $modelClass;
+            $this->_internals['modelNames'][] = $modelClass;
 
             if (!PHP5) {
                 $this->{$modelClass} =& ClassRegistry::init(array(
@@ -89,7 +63,7 @@ class CakeJob extends Object {
                 throw new Exception($message);
             }
 
-            if ($this->_persistModel === true) {
+            if (isset($this->_internals['persistModel']) && $this->_internals['persistModel'] === true) {
                 $this->_persist($modelClass, true, $this->{$modelClass});
                 $registry =& ClassRegistry::getInstance();
                 $this->_persist($modelClass . 'registry', true, $registry->__objects, 'registry');
@@ -97,7 +71,7 @@ class CakeJob extends Object {
         } else {
             $this->_persist($modelClass . 'registry', true, $object, 'registry');
             $this->_persist($modelClass, true, $object);
-            $this->_modelNames[] = $modelClass;
+            $this->_internals['modelNames'][] = $modelClass;
         }
 
         return true;
@@ -116,7 +90,7 @@ class CakeJob extends Object {
 
         $loaded = false;
         if ($plugin . $controllerClass == 'CakeDjjob.CakeDjjobDummies') {
-            if (!empty($this->_controller)) {
+            if (!empty($this->_internals['controller'])) {
                 $loaded = true;
             }
         } else {
@@ -150,7 +124,7 @@ class CakeJob extends Object {
         }
 
         if ($plugin . $controllerClass == 'CakeDjjob.Dummy') {
-            $this->_controller = &$controller;
+            $this->_internals['controller'] = &$controller;
         } else {
             $this->{$controllerClass} = &$controller;
         }
@@ -170,16 +144,16 @@ class CakeJob extends Object {
         $componentClassName = $componentClass . 'Component';
         $component =& new $componentClassName(null);
 
-        if (empty($this->_controller)) {
+        if (empty($this->_internals['controller'])) {
             $this->loadController();
         }
 
         if (method_exists($component, 'initialize')) {
-            $component->initialize($this->_controller);
+            $component->initialize($this->_internals['controller']);
         }
 
         if (method_exists($component, 'startup')) {
-            $component->startup($this->_controller);
+            $component->startup($this->_internals['controller']);
         }
 
         $this->{$componentClass} = &$component;
@@ -223,14 +197,14 @@ class CakeJob extends Object {
  * @return integer Returns the number of bytes output to stdout.
  */
     function stdout($string, $newline = true) {
-        if (empty($this->_stdout)) {
-            $this->_stdout = fopen('php://stdout', 'w');
+        if (empty($this->_internals['stdout'])) {
+            $this->_internals['stdout'] = fopen('php://stdout', 'w');
         }
 
         if ($newline) {
-            return fwrite($this->_stdout, $string . "\n");
+            return fwrite($this->_internals['stdout'], $string . "\n");
         } else {
-            return fwrite($this->_stdout, $string);
+            return fwrite($this->_internals['stdout'], $string);
         }
     }
 
@@ -241,11 +215,11 @@ class CakeJob extends Object {
  * @access public
  */
     function stderr($string) {
-        if (empty($this->_stderr)) {
-            $this->_stderr = fopen('php://stderr', 'w');
+        if (empty($this->_internals['stderr'])) {
+            $this->_internals['stderr'] = fopen('php://stderr', 'w');
         }
 
-        fwrite($this->_stderr, $string);
+        fwrite($this->_internals['stderr'], $string);
     }
 
 /**
