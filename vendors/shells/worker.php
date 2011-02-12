@@ -286,6 +286,7 @@ Clean Params:
     -action <string>
         action to perform on cleanup task
         default value: null
+        valid values: clean, unlock
 
     -date <string>
         date offset
@@ -308,7 +309,7 @@ Commands:
         returns the status of a job queue
 
     worker cleanup
-        returns the status of a job queue
+        cleans a job queue
 
 TEXT;
         $this->out($help);

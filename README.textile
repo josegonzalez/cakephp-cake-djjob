@@ -170,11 +170,35 @@ The above statement will run a single worker on the default queue forever. It ca
 * -debug <number>
 ** debug <level> to set for worker. default level: 0
 
+h3. Cleaning job queues
+
+It's possible to clean a particular job queue, by either resetting locked jobs or deleting failed jobs:
+
+<pre><code>cake worker cleanup</code></pre>
+
+This task can take the @connection@, @type@, @queue@, and @debug@ arguments, as well as a few custom ones:
+
+* -action <string>
+** action to perform on cleanup task. default value: null
+* -date <string>
+** date <string> offset. default value: current evaluation of date('Y-m-d H:i:s')
+* -save <boolean>
+** allow cleanup to modify database. default value: 1
+
+h3. Retrieving the status of a job queue
+
+If you need to get the status of a particular job queue, you can call the status method on the task:
+
+<pre><code>cake worker status</code></pre>
+
+This task can take the @connection@, @type@, @queue@, and @debug@ arguments as well.
+
 h2. TODO
 
 * Allow alternative methods of plugin prefixing
 * Screencast
 * Unit Tests
+* More documentation
 
 h2. License
 
