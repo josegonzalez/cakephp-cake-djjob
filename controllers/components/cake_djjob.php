@@ -73,7 +73,7 @@ class CakeDjjobComponent extends Object {
  * @param string $run_at
  * @return boolean True if enqueue is successful, false on failure
  */
-    function enqueue(CakeJob $job, $queue = "default", $run_at = null) {
+    function enqueue($job, $queue = "default", $run_at = null) {
         return DJJob::enqueue($job, $queue, $run_at);
     }
 
