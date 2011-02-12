@@ -22,7 +22,7 @@ h2. Requirements
 
 h2. Installation
 
-You are required to install both @djjob@ and @cake_djjob@.
+You are required to install both @djjob@ and @cake_djjob@. Note that you'll need a @jobs@ table just like the one included with @djjob@. A @cake_schema@ file is forthcoming.
 
 h3. DJJob Installation
 
@@ -74,7 +74,7 @@ h3. Creating New Jobs
 
 You can create new jobs in the @libs/jobs@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @cake_djjob@ plugin contains a @CakeDjjob_TestJob@ in @libs/jobs/test_job.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
 
-Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. For example, an application's @EmailJob@ might be composed as follows:
+Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @EmailJob@ might be composed as follows:
 
 <pre><code><?php
 class EmailJob extends CakeJob {
@@ -125,9 +125,7 @@ By extending @CakeJob@, you get an instant base off of which writing jobs will b
 
 h3. Enqueuing Jobs
 
-Currently, CakeDJJob only allows users to enqueue Jobs from a Controller/Component. This will be remedied in the future.
-
-For now, you can attach the @CakeDjjob@ Component to your controller like so:
+You can attach the @CakeDjjob@ Component to your controller like so:
 
 <pre><code><?php
 class UsersController extends AppController {
@@ -142,10 +140,32 @@ class UsersController extends AppController {
             $this->Session->setFlash('There is no such email in our system. Please try again.');
         }
     }
+
 }
 ?></code></pre>
 
-Note that you'll need a @jobs@ table just like the one included with @djjob@. A @cake_schema@ file is forthcoming.
+It is also possible to queue jobs from a Model by attaching the included @CakeDjjob@ behavior:
+
+<pre><code><?php
+class User extends AppModel {
+    var $actsAs = array('CakeDjjob.CakeDjjob');
+
+    function forgot_password($user_id) {
+        App::import('Lib', 'ForgotPasswordJob');
+        return $this->enqueue(new ForgotPasswordJob($user_id));
+    }
+
+    function bulkAction($number = 100, $config = array()) {
+        App::import('Lib', 'BulkJob');
+        $jobs = array();
+        while ($number > 0) {
+            $jobs[] = new BulkJob($config);
+        }
+
+        return $this->bulkEnqueue($jobs);
+    }
+}
+?></code></pre>
 
 h3. Running Jobs
 
@@ -199,6 +219,7 @@ h2. TODO
 * Screencast
 * Unit Tests
 * More documentation
+* Task to allow creation of jobs from shells
 
 h2. License
 
