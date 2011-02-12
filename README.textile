@@ -172,12 +172,9 @@ The above statement will run a single worker on the default queue forever. It ca
 
 h2. TODO
 
-* Behavior/Task to allow queueing of new jobs from Models/Shells
 * Allow alternative methods of plugin prefixing
-* Sample EmailJob based off of CakePHP's EmailComponent
 * Screencast
 * Unit Tests
-* Better handling of base CakeJob variables
 
 h2. License
 
