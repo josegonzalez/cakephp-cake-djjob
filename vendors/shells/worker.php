@@ -50,7 +50,7 @@ class WorkerShell extends Shell {
         'type'      => 'mysql',
     );
 
-    var $_queue = null;
+    var $_queue = 'default';
     var $_count = 0;
     var $_sleep = 5;
     var $_max   = 5;
