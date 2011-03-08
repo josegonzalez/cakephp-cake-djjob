@@ -74,32 +74,38 @@ h3. Creating New Jobs
 
 You can create new jobs in the @libs/jobs@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @cake_djjob@ plugin contains a @CakeDjjob_TestJob@ in @libs/jobs/test_job.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
 
-Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @EmailJob@ might be composed as follows:
+Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @ForgotPasswordJob@ might be composed as follows:
 
 <pre><code><?php
-class EmailJob extends CakeJob {
+class ForgotPasswordJob extends CakeJob {
+
+    var $email = null;
+    function __construct($email) {
+        $this->email = $email;
+    }
 
     function perform() {
         $this->out('Some debug output');
 
         // Using models
-        $this->loadModel('Post');
-        $count = $this->Post->find('count');
+        $this->loadModel('User');
+        $user = $this->User->findByEmail($this->email);
+
+        if (empty($user)) {
+            return;
+        }
 
         // Complex email stuff here...
         $this->loadComponent('Email');
         $this->Email->_set(array(
-            'to' => 'email@example.com',
+            'to' => $this->email,
             'from' => 'noreply@example.com',
-            'subject' => 'Daily Post Statistics',
+            'subject' => 'Forgot your password?',
             'replyTo' => 'noreply@example.com',
             'template' => null,
             'sendAs' => 'both',
         ));
-        $this->Email->send(sprintf("There are %n posts", $count));
-
-        // More work involving some api...
-        $this->out("Some metrics");
+        $this->Email->send("Some text to indicate how to reset password...");
     }
 
 }
@@ -132,9 +138,9 @@ class UsersController extends AppController {
     var $components = array('CakeDjjob.CakeDjjob');
 
     function forgot_password() {
-        if ($user_id = $this->User->forgot($this->data)) {
+        if (($email = $this->User->forgot($this->data)) != false) {
             App::import('Lib', 'ForgotPasswordJob');
-            $this->CakeDjjob->enqueue(new ForgotPasswordJob($user_id));
+            $this->CakeDjjob->enqueue(new ForgotPasswordJob($email));
             $this->Session->setFlash('You will shortly be sent a password reset email :)');
         } else {
             $this->Session->setFlash('There is no such email in our system. Please try again.');
@@ -150,16 +156,16 @@ It is also possible to queue jobs from a Model by attaching the included @CakeDj
 class User extends AppModel {
     var $actsAs = array('CakeDjjob.CakeDjjob');
 
-    function forgot_password($user_id) {
+    function forgot_password($email) {
         App::import('Lib', 'ForgotPasswordJob');
-        return $this->enqueue(new ForgotPasswordJob($user_id));
+        return $this->enqueue(new ForgotPasswordJob($email));
     }
 
-    function bulkAction($number = 100, $config = array()) {
-        App::import('Lib', 'BulkJob');
+    function bulkAction($emails = array(), $config = array()) {
+        App::import('Lib', 'BulkPasswordResetJob');
         $jobs = array();
-        while ($number > 0) {
-            $jobs[] = new BulkJob($config);
+        foreach ($emails as $email)
+            $jobs[] = new BulkPasswordResetJob($email, $config);
         }
 
         return $this->bulkEnqueue($jobs);
