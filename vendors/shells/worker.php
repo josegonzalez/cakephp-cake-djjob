@@ -145,9 +145,10 @@ class WorkerShell extends Shell {
                     "{$this->settings['type']}:host={$connection->config['host']}",
                     "dbname={$connection->config['database']}",
                     "port={$connection->config['port']}",
-                )),
-                $connection->config['login'],
-                $connection->config['password']
+                )), array(
+                    'mysql_user' => $connection->config['login'],
+                    'mysql_pass' => $connection->config['password']
+                )
             );
         } else {
             DJJob::configure(
