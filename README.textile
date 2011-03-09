@@ -139,7 +139,7 @@ class UsersController extends AppController {
 
     function forgot_password() {
         if (($email = $this->User->forgot($this->data)) != false) {
-			$forgotPasswordJob = $this->CakeDjjob->load('ForgotPasswordJob', $email);
+            $forgotPasswordJob = $this->CakeDjjob->load('ForgotPasswordJob', $email);
             $this->CakeDjjob->enqueue($forgotPasswordJob);
             $this->Session->setFlash('You will shortly be sent a password reset email :)');
         } else {
