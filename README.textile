@@ -176,7 +176,7 @@ class User extends AppModel {
 
 h3. Loading Jobs
 
-You can attach the @CakeDjjob@ Component to your controller like so:
+This is an alternative to manually importing the Job using App::import().
 
 <pre><code><?php
 class UsersController extends AppController {
