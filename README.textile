@@ -129,6 +129,7 @@ Extending the @CakeJob@ also allows the usage of the following methods:
 
 By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
 
+
 h3. Enqueuing Jobs
 
 You can attach the @CakeDjjob@ Component to your controller like so:
@@ -139,8 +140,8 @@ class UsersController extends AppController {
 
     function forgot_password() {
         if (($email = $this->User->forgot($this->data)) != false) {
-            $forgotPasswordJob = $this->CakeDjjob->load('ForgotPasswordJob', $email);
-            $this->CakeDjjob->enqueue($forgotPasswordJob);
+            App::import('Lib', 'ForgotPasswordJob');
+            $this->CakeDjjob->enqueue(new ForgotPasswordJob($email));
             $this->Session->setFlash('You will shortly be sent a password reset email :)');
         } else {
             $this->Session->setFlash('There is no such email in our system. Please try again.');
@@ -172,6 +173,28 @@ class User extends AppModel {
     }
 }
 ?></code></pre>
+
+h3. Loading Jobs
+
+You can attach the @CakeDjjob@ Component to your controller like so:
+
+<pre><code><?php
+class UsersController extends AppController {
+    var $components = array('CakeDjjob.CakeDjjob');
+
+    function forgot_password() {
+        if (($email = $this->User->forgot($this->data)) != false) {
+            $forgotPasswordJob = $this->CakeDjjob->load('ForgotPasswordJob', $email);
+            $this->CakeDjjob->enqueue($forgotPasswordJob);
+            $this->Session->setFlash('You will shortly be sent a password reset email :)');
+        } else {
+            $this->Session->setFlash('There is no such email in our system. Please try again.');
+        }
+    }
+
+}
+?></code></pre>
+
 
 h3. Running Jobs
 
