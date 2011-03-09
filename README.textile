@@ -175,9 +175,9 @@ class User extends AppModel {
 ?></code></pre>
 
 h3. Optional way to load jobs.
-Requires (PHP 5 >= 5.1.3)
-This is an alternative to manually importing the Job using App::import().
 
+- Requires (PHP 5 >= 5.1.3)
+- This is an alternative to manually importing the Job using App::import().
 - The load function can requires only that the first parameter be the name of the job to load.
 	- It assumes that the Job will be imported from /app/libs
 	- You can pass it as many parameters as needed as they are simply passed through to your Job
