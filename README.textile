@@ -182,23 +182,6 @@ h3. Optional way to load jobs.
 	- It assumes that the Job will be imported from /app/libs
 	- You can pass it as many parameters as needed as they are simply passed through to your Job
 		<pre><code>ex: $loadStoreJob = $this->CakeDjjob->load('LoadStoreJob', $storeName, $storeHours, $storeEmployees, $storeManagers);</code></pre>
-		
-<pre><code><?php
-class UsersController extends AppController {
-    var $components = array('CakeDjjob.CakeDjjob');
-
-    function forgot_password() {
-        if (($email = $this->User->forgot($this->data)) != false) {
-            $forgotPasswordJob = $this->CakeDjjob->load('ForgotPasswordJob', $email);
-            $this->CakeDjjob->enqueue($forgotPasswordJob);
-            $this->Session->setFlash('You will shortly be sent a password reset email :)');
-        } else {
-            $this->Session->setFlash('There is no such email in our system. Please try again.');
-        }
-    }
-
-}
-?></code></pre>
 
 
 h3. Running Jobs
