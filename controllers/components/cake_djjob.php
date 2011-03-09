@@ -64,6 +64,30 @@ class CakeDjjobComponent extends Object {
     }
 
 /**
+ * Load loads Jobs using DJJob
+ * 	- it auto imports and passes through the constructor parameters to newly created job.
+ * 	- *Note: (PHP 5 >= 5.1.3) - requires ReflectionClass
+ *
+ * @param string $jobName
+ * @param mixed $passthrough params
+ * @param mixed $passthrough, ...unlimited OPTIONAL number of additional variables to pass through
+ * @return job 
+ */
+    function load($jobName) {
+		App::import("Lib", $jobName);
+		$args = func_get_args();
+		//Remove the first param, because its the Job Name, if there is anything else, pass it along to the new Jobs Controller.
+		array_shift($args);
+		if(empty($args))
+			return new $jobName();                                                                                                                                                          
+		else {
+			$ref = new ReflectionClass($jobName);
+			return $ref->newInstanceArgs($args);
+		}
+    }
+
+
+/**
  * Enqueues Jobs using DJJob
  *
  * Note that all Jobs enqueued using this system must extend the base CakeJob
