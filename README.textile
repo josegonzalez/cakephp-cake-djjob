@@ -181,7 +181,7 @@ h3. Optional way to load jobs.
 - The load function requires only that the first parameter be the name of the job to load.
 	- It assumes that the Job will be imported from /app/libs
 	- You can pass it as many parameters as needed as they are simply passed through to your Job
-		`ex: $loadStoreJob = $this->CakeDjjob->load('LoadStoreJob', $storeName, $storeHours, $storeEmployees, $storeManagers);`
+		<pre><code>ex: $loadStoreJob = $this->CakeDjjob->load('LoadStoreJob', $storeName, $storeHours, $storeEmployees, $storeManagers);</code></pre>
 		
 <pre><code><?php
 class UsersController extends AppController {
