@@ -21,7 +21,6 @@ if (!class_exists('DJJob')) {
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class CakeDjjobComponent extends Object {
-
     var $settings = array(
         'connection'=> 'default',
         'type'      => 'mysql',
