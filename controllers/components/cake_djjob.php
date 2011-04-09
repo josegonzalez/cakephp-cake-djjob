@@ -1,4 +1,7 @@
 <?php
+if (!class_exists('ConnectionManager')) {
+    App::import('Model', 'ConnectionManager');
+}
 if (!class_exists('CakeJob')) {
     App::import('Lib', 'CakeDjjob.cake_job', array(
         'file' => 'jobs' . DS . 'cake_job.php',
