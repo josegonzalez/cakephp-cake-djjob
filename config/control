@@ -1,0 +1,8 @@
+Package: cake_djjob
+Source: git://github.com/josegonzalez/cake_djjob.git
+Type: plugin
+Section: background
+Description: job queues for cakephp using seatgeek's djjob
+Pre-depends: CakePHP==1.3
+Homepage: http://github.com/josegonzalez/cake_djjob
+Bugs: http://github.com/josegonzalez/cake_djjob/issues
