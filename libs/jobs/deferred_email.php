@@ -119,7 +119,7 @@ class DeferredEmail extends CakeJob {
 
         // Convert booleans to ints, otherwise the signature will be incorrect
         foreach ($this->_vars as &$var)
-            if (is_bool($var)) $var = ($var)? 1:0;
+            if (is_bool($var)) $var = ($var) ? 1 : 0;
 
         $this->_vars['to'] = $this->_email;
         if ($this->_test) {
@@ -129,13 +129,27 @@ class DeferredEmail extends CakeJob {
             }
         }
 
+        if (!isset($this->_vars['from'])) {
+            $this->_vars['from'] = Configure::read('Email.from');
+        }
+        if (!isset($this->_vars['replyTo'])) {
+            $this->_vars['replyTo'] = $this->_vars['from'];
+        }
+
         if (!isset($this->_vars['template'])) {
             $this->_vars['template'] = $this->_template;
+        }
+
+        if (!isset($this->_vars['sendAs'])) {
+            $this->_vars['sendAs'] = 'both';
         }
 
         try {
             $this->loadComponent('Email');
             $this->Email->_set($this->_vars);
+            if (isset($this->_vars['variables'])) {
+                $this->_internals['controller']->set($this->_vars['variables']);
+            }
             $this->_sent = $this->Email->send($this->_message);
         } catch (Exception $e) {
             $this->_sent = false;
