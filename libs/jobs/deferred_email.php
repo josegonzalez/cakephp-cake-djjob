@@ -135,6 +135,9 @@ class DeferredEmail extends CakeJob {
         if (!isset($this->_vars['replyTo'])) {
             $this->_vars['replyTo'] = $this->_vars['from'];
         }
+        if (!isset($this->_vars['return'])) {
+            $this->_vars['return'] = $this->_vars['from'];
+        }
 
         if (!isset($this->_vars['template'])) {
             $this->_vars['template'] = $this->_template;
