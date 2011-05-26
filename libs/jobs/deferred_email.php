@@ -159,6 +159,11 @@ class DeferredEmail extends CakeJob {
             $this->sendLater(date('Y-m-d H:i:s', strtotime("+1 minute")));
         }
 
+        $smtpError = $this->Email->smtpError;
+        if (!empty($smtpError)) {
+            $this->log($smtpError, 'email');
+        }
+
         return $this->_sent;
     }
 
