@@ -129,6 +129,7 @@ Extending the @CakeJob@ also allows the usage of the following methods:
 
 By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
 
+
 h3. Enqueuing Jobs
 
 You can attach the @CakeDjjob@ Component to your controller like so:
@@ -172,6 +173,16 @@ class User extends AppModel {
     }
 }
 ?></code></pre>
+
+h3. Optional way to load jobs.
+
+- Requires (PHP 5 >= 5.1.3) && ReflectionClass
+- This is an alternative to manually importing the Job using App::import().
+- The load function requires only that the first parameter be the name of the job to load.
+	- It assumes that the Job will be imported from /app/libs/jobs
+	- You can pass it as many parameters as needed as they are simply passed through to your Job
+		<pre><code>ex: $loadStoreJob = $this->CakeDjjob->load('LoadStoreJob', $storeName, $storeHours, $storeEmployees, $storeManagers);</code></pre>
+
 
 h3. Running Jobs
 
