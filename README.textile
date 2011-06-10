@@ -165,7 +165,7 @@ class User extends AppModel {
     function bulkAction($emails = array(), $config = array()) {
         App::import('Lib', 'BulkPasswordResetJob');
         $jobs = array();
-        foreach ($emails as $email)
+        foreach ($emails as $email) {
             $jobs[] = new BulkPasswordResetJob($email, $config);
         }
 
@@ -174,15 +174,32 @@ class User extends AppModel {
 }
 ?></code></pre>
 
-h3. Optional way to load jobs.
+h3. Optional way to load jobs into an object
 
-- Requires (PHP 5 >= 5.1.3) && ReflectionClass
+- Requires (PHP 5 >= 5.1.3) and ReflectionClass when loading jobs with arguments
 - This is an alternative to manually importing the Job using App::import().
 - The load function requires only that the first parameter be the name of the job to load.
-	- It assumes that the Job will be imported from /app/libs/jobs
-	- You can pass it as many parameters as needed as they are simply passed through to your Job
-		<pre><code>ex: $loadStoreJob = $this->CakeDjjob->load('LoadStoreJob', $storeName, $storeHours, $storeEmployees, $storeManagers);</code></pre>
+    - It assumes that the Job will be imported from /app/libs/jobs
+    - You can pass it as many parameters as needed as they are simply passed through to your Job
 
+<pre><code><?php
+class User extends AppModel {
+    var $actsAs = array('CakeDjjob.CakeDjjob');
+
+    function forgot_password($email) {
+        return $this->enqueue($this->CakeDjjob->load('ForgotPasswordJob', $email));
+    }
+
+    function bulkAction($emails = array(), $config = array()) {
+        $jobs = array();
+        foreach ($emails as $email)
+            $jobs[] = $this->CakeDjjob->load('BulkPasswordResetJob', $email, $config);
+        }
+
+        return $this->bulkEnqueue($jobs);
+    }
+}
+?></code></pre>
 
 h3. Running Jobs
 
@@ -233,10 +250,12 @@ This task can take the @connection@, @type@, @queue@, and @debug@ arguments as w
 h2. TODO
 
 * Allow alternative methods of plugin prefixing
+* Circumvent class-loading via a custom-serialization method
+* Configuring location of job classes
 * Screencast
 * Unit Tests
-* More documentation
-* Task to allow creation of jobs from shells
+* More documentation (DeferredEmail class)
+* -Task to allow creation of jobs from shells-
 
 h2. License
 

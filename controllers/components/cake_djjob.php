@@ -24,6 +24,7 @@ if (!class_exists('DJJob')) {
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class CakeDjjobComponent extends Object {
+
     var $settings = array(
         'connection'=> 'default',
         'type'      => 'mysql',
@@ -66,28 +67,38 @@ class CakeDjjobComponent extends Object {
     }
 
 /**
- * Load loads Jobs using DJJob
- * 	- it auto imports and passes through the constructor parameters to newly created job.
- * 	- *Note: (PHP 5 >= 5.1.3) - requires ReflectionClass
+ * Returns a job
+ * 
+ * Auto imports and passes through the constructor parameters to newly created job
+ * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
- * @param string $jobName
- * @param mixed $passthrough params
- * @param mixed $passthrough, ...unlimited OPTIONAL number of additional variables to pass through
- * @return job 
+ * @param string $jobName Name of job being loaded
+ * @param mixed $argument Some argument to pass to the job
+ * @param mixed ... etc.
+ * @return mixed Job instance if available, null otherwise
  */
-    function load($jobName) {
-		App::import("Lib", $jobName);
-		$args = func_get_args();
-		//Remove the first param, because its the Job Name, if there is anything else, pass it along to the new Jobs Controller.
-		array_shift($args);
-		if(empty($args))
-			return new $jobName();                                                                                                                                                          
-		else {
-			$ref = new ReflectionClass($jobName);
-			return $ref->newInstanceArgs($args);
-		}
-    }
+    function load() {
+        $args = func_get_args();
+        if (empty($args) || !is_string($args[0])) {
+            return null;
+        }
 
+        $jobName = array_shift($args);
+        if (!class_exists($jobName)) {
+            App::import("Lib", $jobName);
+        }
+
+        if (empty($args)) {
+            return new $jobName();                                                                                                                                                          
+        }
+
+        if (!class_exists('ReflectionClass')) {
+            return null;
+        }
+
+        $ref = new ReflectionClass($jobName);
+        return $ref->newInstanceArgs($args);
+    }
 
 /**
  * Enqueues Jobs using DJJob

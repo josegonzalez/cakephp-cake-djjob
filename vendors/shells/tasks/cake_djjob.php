@@ -76,6 +76,40 @@ class CakeDjjobTask extends Shell {
     }
 
 /**
+ * Returns a job
+ * 
+ * Auto imports and passes through the constructor parameters to newly created job
+ * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
+ *
+ * @param string $jobName Name of job being loaded
+ * @param mixed $argument Some argument to pass to the job
+ * @param mixed ... etc.
+ * @return mixed Job instance if available, null otherwise
+ */
+    function load() {
+        $args = func_get_args();
+        if (empty($args) || !is_string($args[0])) {
+            return null;
+        }
+
+        $jobName = array_shift($args);
+        if (!class_exists($jobName)) {
+            App::import("Lib", $jobName);
+        }
+
+        if (empty($args)) {
+            return new $jobName();                                                                                                                                                          
+        }
+
+        if (!class_exists('ReflectionClass')) {
+            return null;
+        }
+
+        $ref = new ReflectionClass($jobName);
+        return $ref->newInstanceArgs($args);
+    }
+
+/**
  * Enqueues Jobs using DJJob
  *
  * Note that all Jobs enqueued using this system must extend the base CakeJob

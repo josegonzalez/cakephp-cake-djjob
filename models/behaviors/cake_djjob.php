@@ -75,28 +75,41 @@ class CakeDjjobBehavior extends ModelBehavior {
         }
     }
 
-
 /**
- * Load loads Jobs using DJJob
- * 	- it auto imports and passes through the constructor parameters to newly created job.
- * 	- *Note: (PHP 5 >= 5.1.3) - requires ReflectionClass
+ * Returns a job
+ * 
+ * Auto imports and passes through the constructor parameters to newly created job
+ * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
- * @param string $jobName
- * @param mixed $passthrough params
- * @param mixed $passthrough, ...unlimited OPTIONAL number of additional variables to pass through
- * @return job 
+ * @param object $model Model instance calling this method
+ * @param string $jobName Name of job being loaded
+ * @param mixed $argument Some argument to pass to the job
+ * @param mixed ... etc.
+ * @return mixed Job instance if available, null otherwise
  */
-    function load($model, $jobName) {
-		App::import("Lib", $jobName);
-		$args = func_get_args();
-		//Remove the first param, because its the Job Name, if there is anything else, pass it along to the new Jobs Controller.
-		array_shift($args);
-		if(empty($args))
-			return new $jobName();                                                                                                                                                          
-		else {
-			$ref = new ReflectionClass($jobName);
-			return $ref->newInstanceArgs($args);
-		}
+    function load(&$model) {
+        $args = func_get_args();
+        array_shift($args);
+
+        if (empty($args) || !is_string($args[0])) {
+            return null;
+        }
+
+        $jobName = array_shift($args);
+        if (!class_exists($jobName)) {
+            App::import("Lib", $jobName);
+        }
+
+        if (empty($args)) {
+            return new $jobName();                                                                                                                                                          
+        }
+
+        if (!class_exists('ReflectionClass')) {
+            return null;
+        }
+
+        $ref = new ReflectionClass($jobName);
+        return $ref->newInstanceArgs($args);
     }
 
 /**
