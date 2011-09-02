@@ -120,7 +120,7 @@ class CakeDjjobTask extends Shell {
  * @param string $run_at
  * @return boolean True if enqueue is successful, false on failure
  */
-    function enqueue(&$model, $job, $queue = "default", $run_at = null) {
+    function enqueue($job, $queue = "default", $run_at = null) {
         return DJJob::enqueue($job, $queue, $run_at);
     }
 
@@ -132,7 +132,7 @@ class CakeDjjobTask extends Shell {
  * @param string $run_at
  * @return boolean True if bulk enqueue is successful, false on failure
  */
-    function bulkEnqueue(&$model, $jobs, $queue = "default", $run_at = null) {
+    function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
         return DJJob::bulkEnqueue($jobs, $queue, $run_at);
     }
 
@@ -143,7 +143,7 @@ class CakeDjjobTask extends Shell {
  * @return array
  * @author Jose Diaz-Gonzalez
  **/
-    function status(&$model, $queue = "default") {
+    function status($queue = "default") {
         return DJJob::status($queue);
     }
 }
