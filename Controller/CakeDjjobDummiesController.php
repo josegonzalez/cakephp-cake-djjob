@@ -22,7 +22,7 @@ class CakeDjjobDummiesController extends CakeDjjobAppController {
  * @access public
  * @link http://book.cakephp.org/view/959/Controller-Attributes
  */
-    var $name = 'CakeDjjobDummies';
+	public $name = 'CakeDjjobDummies';
 
 /**
  * An array containing the class names of models this controller uses.
@@ -36,6 +36,6 @@ class CakeDjjobDummiesController extends CakeDjjobAppController {
  * @access protected
  * @link http://book.cakephp.org/view/961/components-helpers-and-uses
  */
-    var $uses = array();
+	public $uses = array();
 
 }

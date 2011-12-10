@@ -31,12 +31,12 @@ _[Manual]_
 # Download this: http://github.com/seatgeek/djjob/zipball/master
 # Unzip that download.
 # Copy the resulting folder to app/plugins
-# Rename the folder you just copied to @djjob/vendors@
+# Rename the folder you just copied to @Djjob/Vendor@
 
 _[GIT Submodule]_
 
 In your app directory type:
-<pre><code>git submodule add git://github.com/seatgeek/djjob.git plugins/djjob/vendors
+<pre><code>git submodule add git://github.com/seatgeek/djjob.git Plugin/Djjob/Vendor
 git submodule init
 git submodule update
 </code></pre>
@@ -44,7 +44,7 @@ git submodule update
 _[GIT Clone]_
 
 In your plugin directory type
-<pre><code>git clone git://github.com/seatgeek/djjob.git djjob/vendors</code></pre>
+<pre><code>git clone git://github.com/seatgeek/djjob.git Djjob/Vendor</code></pre>
 
 h3. Cake DJJob Installation
 
@@ -52,29 +52,29 @@ _[Manual]_
 
 # Download this: http://github.com/josegonzalez/cake_djjob/zipball/master
 # Unzip that download.
-# Copy the resulting folder to app/plugins
-# Rename the folder you just copied to @cake_djjob@
+# Copy the resulting folder to app/Plugin
+# Rename the folder you just copied to @CakeDjjob@
 
 _[GIT Submodule]_
 
 In your app directory type:
-<pre><code>git submodule add git://github.com/josegonzalez/cake_djjob.git plugins/cake_djjob
+<pre><code>git submodule add git://github.com/josegonzalez/cake_djjob.git Plugin/CakeDjjob
 git submodule init
 git submodule update
 </code></pre>
 
 _[GIT Clone]_
 
-In your plugin directory type
-<pre><code>git clone git://github.com/josegonzalez/cake_djjob.git cake_djjob</code></pre>
+In your Plugin directory type
+<pre><code>git clone git://github.com/josegonzalez/cake_djjob.git CakeDjjob</code></pre>
 
 h2. Usage
 
 h3. Creating New Jobs
 
-You can create new jobs in the @libs/jobs@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @cake_djjob@ plugin contains a @CakeDjjob_TestJob@ in @libs/jobs/test_job.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
+You can create new jobs in the @Lib/Job@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @CakeDjjob@ plugin contains a @CakeDjjob_TestJob@ in @Lib/Job/TestJob.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
 
-Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @cake_djjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @ForgotPasswordJob@ might be composed as follows:
+Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @CakeDjjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @ForgotPasswordJob@ might be composed as follows:
 
 <pre><code><?php
 class ForgotPasswordJob extends CakeJob {
@@ -135,12 +135,13 @@ h3. Enqueuing Jobs
 You can attach the @CakeDjjob@ Component to your controller like so:
 
 <pre><code><?php
-class UsersController extends AppController {
-    var $components = array('CakeDjjob.CakeDjjob');
+App::uses('ForgotPasswordJob', 'Lib/Job');
 
-    function forgot_password() {
+class UsersController extends AppController {
+    public $components = array('CakeDjjob.CakeDjjob');
+
+    public function forgot_password() {
         if (($email = $this->User->forgot($this->data)) != false) {
-            App::import('Lib', 'ForgotPasswordJob');
             $this->CakeDjjob->enqueue(new ForgotPasswordJob($email));
             $this->Session->setFlash('You will shortly be sent a password reset email :)');
         } else {
@@ -154,16 +155,16 @@ class UsersController extends AppController {
 It is also possible to queue jobs from a Model by attaching the included @CakeDjjob@ behavior:
 
 <pre><code><?php
-class User extends AppModel {
-    var $actsAs = array('CakeDjjob.CakeDjjob');
+App::uses('ForgotPasswordJob', 'Lib/Job');
 
-    function forgot_password($email) {
-        App::import('Lib', 'ForgotPasswordJob');
+class User extends AppModel {
+    public $actsAs = array('CakeDjjob.CakeDjjob');
+
+    public function forgot_password($email) {
         return $this->enqueue(new ForgotPasswordJob($email));
     }
 
-    function bulkAction($emails = array(), $config = array()) {
-        App::import('Lib', 'BulkPasswordResetJob');
+    public function bulkAction($emails = array(), $config = array()) {
         $jobs = array();
         foreach ($emails as $email) {
             $jobs[] = new BulkPasswordResetJob($email, $config);
@@ -177,20 +178,20 @@ class User extends AppModel {
 h3. Optional way to load jobs into an object
 
 - Requires (PHP 5 >= 5.1.3) and ReflectionClass when loading jobs with arguments
-- This is an alternative to manually importing the Job using App::import().
+- This is an alternative to manually importing the Job using App::uses().
 - The load function requires only that the first parameter be the name of the job to load.
-    - It assumes that the Job will be imported from /app/libs/jobs
+    - It assumes that the Job will be imported from /app/Lib/Job
     - You can pass it as many parameters as needed as they are simply passed through to your Job
 
 <pre><code><?php
 class User extends AppModel {
-    var $actsAs = array('CakeDjjob.CakeDjjob');
+    public $actsAs = array('CakeDjjob.CakeDjjob');
 
-    function forgot_password($email) {
+    public function forgot_password($email) {
         return $this->enqueue($this->CakeDjjob->load('ForgotPasswordJob', $email));
     }
 
-    function bulkAction($emails = array(), $config = array()) {
+    public function bulkAction($emails = array(), $config = array()) {
         $jobs = array();
         foreach ($emails as $email)
             $jobs[] = $this->CakeDjjob->load('BulkPasswordResetJob', $email, $config);
@@ -209,19 +210,19 @@ Included with this plugin is a task to run jobs.
 
 The above statement will run a single worker on the default queue forever. It can be added to your cron or by some other process manager such as "God":http://god.rubyforge.org/. The following params are available for the worker:
 
-* -connection <config>
+* --connection <config>
 ** set db config <config>. default config: default
-* -type <name>
+* --type <name>
 ** pdo name for connection <type>. default type: mysql
-* -queue <name>
+* --queue <name>
 ** queue <name> to pull jobs from. default queue: default
-* -count <number>
+* --count <number>
 ** run <number> of jobs to run before exiting (0 for unlimited). default count: 0
-* -sleep <name>
+* --sleep <name>
 ** sleep <number> seconds after finding no new jobs. default seconds: 5
-* -max <number>
+* --max <number>
 ** max <number> of retries for a given job. default retries: 5
-* -debug <number>
+* --debug <number>
 ** debug <level> to set for worker. default level: 0
 
 h3. Cleaning job queues
@@ -232,11 +233,11 @@ It's possible to clean a particular job queue, by either resetting locked jobs o
 
 This task can take the @connection@, @type@, @queue@, and @debug@ arguments, as well as a few custom ones:
 
-* -action <string>
+* --action <string>
 ** action to perform on cleanup task. default value: null
-* -date <string>
+* --date <string>
 ** date <string> offset. default value: current evaluation of date('Y-m-d H:i:s')
-* -save <boolean>
+* --save <boolean>
 ** allow cleanup to modify database. default value: 1
 
 h3. Retrieving the status of a job queue
