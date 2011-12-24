@@ -1,6 +1,7 @@
 <?php
 App::uses('CakeJob', 'CakeDjjob.Job');
 App::uses('DJJob', 'Djjob.Vendor');
+App::uses('CakeEmail', 'Network/Email');
 
 /**
  * Deferred Email class
@@ -139,22 +140,17 @@ class DeferredEmail extends CakeJob {
 			$this->_vars['sendAs'] = 'both';
 		}
 
+		$email = new CakeEmail();
 		try {
-			$this->loadComponent('Email');
-			$this->Email->_set($this->_vars);
+			$email->config($this->_vars);
 			if (isset($this->_vars['variables'])) {
-				$this->_internals['controller']->set($this->_vars['variables']);
+				$email->viewVars($this->_vars['variables']);
 			}
-			$this->_sent = $this->Email->send($this->_message);
+			$this->_sent = $email->send($this->_message);
 		} catch (Exception $e) {
 			$this->_sent = false;
 			$this->log($e->getMessage(), 'email');
 			$this->sendLater(date('Y-m-d H:i:s', strtotime("+1 minute")));
-		}
-
-		$smtpError = $this->Email->smtpError;
-		if (!empty($smtpError)) {
-			$this->log($smtpError, 'email');
 		}
 
 		return $this->_sent;
@@ -169,6 +165,15 @@ class DeferredEmail extends CakeJob {
  */
 	public function sendLater($send_at = null, $queue = "email") {
 		DJJob::enqueue($this, $queue, $send_at);
+	}
+
+/**
+ * Gets the current variables
+ *
+ * @return array
+ */
+	public function getVars() {
+		return $this->_vars;
 	}
 
 /**
