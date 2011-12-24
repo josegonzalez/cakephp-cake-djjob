@@ -5,6 +5,9 @@
  * @package default
  * @author Jose Diaz-Gonzalez
  */
+
+App::uses('CakeRequest', 'Network');
+App::uses('CakeResponse', 'Network');
 App::uses('Controller', 'Controller');
 class CakeJob extends Object {
 
@@ -81,10 +84,15 @@ class CakeJob extends Object {
  * @access public
  **/
 	public function loadController($controllerClass = 'Controller', $modelNames = array()) {
-		list($plugin, $controllerClass) = pluginSplit($controllerClass, true, null);
+		list($pluginName, $controllerClass) = pluginSplit($controllerClass, true, null);
+
+		$pluginPath = '';
+		if (!empty($pluginName)) {
+			$pluginPath = $pluginName . '.';
+		}
 
 		$loaded = false;
-		if ($plugin . $controllerClass == 'Controller') {
+		if ($pluginPath . $controllerClass == 'Controller') {
 			if (!empty($this->_internals['controller'])) {
 				$loaded = true;
 			}
@@ -96,36 +104,47 @@ class CakeJob extends Object {
 
 		if ($loaded) {
 			$message = sprintf("%s Controller", $controllerClass);
-			if (!empty($plugin)) {
-				$message .= sprintf(" in %s Plugin", substr($plugin, 0, -1));
+			if (!empty($pluginName)) {
+				$message .= sprintf(" in %s Plugin", substr($pluginName, 0, -1));
 			}
 			throw new Exception(sprintf("%s is already loaded", $message));
 		}
 
-		if (!class_exists($controllerClass)) {
-			App::import('Controller', $plugin . $controllerClass);
+		if (!($pluginPath . $controllerClass)) {
+			return false;
 		}
 
-		if ($controllerClass == 'Controller') {
-			$controllerClassName = 'Controller';
-			$controller =& new $controllerClassName();
-			$controller->uses = array();
-		} else {
-			$controllerClassName = $controllerClass . 'Controller';
-			$controller =& new $controllerClassName();
+		$class = $controllerClass;
+		if ($class != 'Controller') {
+			$class = $controllerClass . 'Controller';
 		}
 
-		$controller->constructClasses();
-		$controller->startupProcess();
+		App::uses('AppController', 'Controller');
+		App::uses($pluginName . 'AppController', $pluginPath . 'Controller');
+		App::uses($class, $pluginPath . 'Controller');
+		if (!class_exists($class)) {
+			return false;
+		}
+
+		if (!$class) {
+			return false;
+		}
+		$reflection = new ReflectionClass($class);
+		if ($reflection->isAbstract() || $reflection->isInterface()) {
+			return false;
+		}
+		$Controller = $reflection->newInstance(new CakeRequest, new CakeResponse);
+		$Controller->constructClasses();
+		$Controller->startupProcess();
 
 		foreach ($modelNames as $modelName) {
-			$controller->loadModel($modelName);
+			$Controller->loadModel($modelName);
 		}
 
-		if ($plugin . $controllerClass == 'Controller') {
-			$this->_internals['controller'] = &$controller;
+		if ($class == 'Controller') {
+			$this->_internals['controller'] = &$Controller;
 		} else {
-			$this->{$controllerClass} = &$controller;
+			$this->{$controllerClass} = &$Controller;
 		}
 		return true;
 	}
@@ -142,38 +161,26 @@ class CakeJob extends Object {
 			$this->loadController();
 		}
 
-		App::import('Component', $componentClass);
-		list($plugin, $componentClass) = pluginSplit($componentClass, true, null);
-		$componentClassName = $componentClass . 'Component';
-		$object =& new $componentClassName(null);
-
-		if (method_exists($object, 'initialize')) {
-			$object->initialize($this->_internals['controller'], $settings);
+		$components = ComponentCollection::normalizeObjectArray(array($componentClass => $settings));
+		foreach ($components as $name => $properties) {
+			$this->_internals['controller']->{$name} = $this->_internals['controller']->Components->load(
+				$properties['class'],
+				$properties['settings']
+			);
+			$this->{$name} = $this->_internals['controller']->{$name};
 		}
 
-		if (isset($object->components) && is_array($object->components)) {
-			$normal = Set::normalize($object->components);
-			foreach ((array) $normal as $component => $config) {
-				$this->_internals['controller']->Component->_loadComponents($object, $component);
-			}
-
-			foreach ((array) $normal as $component => $config) {
-				list($plugin, $relatedComponentClass) = pluginSplit($component, true, null);
-
-				if (method_exists($object, 'initialize')) {
-					$object->{$relatedComponentClass}->initialize($this->_internals['controller'], $settings);
-				}
-				if (method_exists($object, 'startup')) {
-					$object->{$relatedComponentClass}->startup($this->_internals['controller']);
-				}
-			}
+		if (method_exists($this->_internals['controller']->{$name}, 'initialize')) {
+			$this->_internals['controller']->{$name}->initialize(
+				$this->_internals['controller']
+			);
 		}
 
-		if (method_exists($object, 'startup')) {
-			$object->startup($this->_internals['controller']);
+		if (method_exists($this->_internals['controller']->{$name}, 'startup')) {
+			$this->_internals['controller']->{$name}->startup(
+				$this->_internals['controller']
+			);
 		}
-
-		$this->{$componentClass} = &$object;
 	}
 
 /**
