@@ -1,7 +1,7 @@
 <?php
 App::uses('AppShell', 'Console/Command');
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Lib/Job');
+App::uses('CakeJob', 'CakeDjjob.Job');
 App::uses('DJJob', 'Djjob.Vendor');
 
 /**
@@ -24,10 +24,10 @@ function unserialize_jobs($className) {
 	}
 
 	if (!empty($plugin)) {
-		$plugin = $plugin . '.';
+		$plugin = "{$plugin}.";
 	}
 
-	App::uses($className, $plugin . '.Lib/Job');
+	App::uses($className, "{$plugin}Job");
 }
 
 /**

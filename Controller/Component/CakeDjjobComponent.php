@@ -1,6 +1,6 @@
 <?php
 App::uses('ConnectionManager', 'Model');
-App::uses('CakeJob', 'CakeDjjob.Lib/Job');
+App::uses('CakeJob', 'CakeDjjob.Job');
 App::uses('DJJob', 'Djjob.Vendor');
 
 /**
@@ -85,21 +85,24 @@ class CakeDjjobComponent extends Component {
 		}
 
 		$jobName = array_shift($args);
-		list($plugin, $job) = pluginSplit($jobName);
+		list($plugin, $className) = pluginSplit($jobName);
 		if ($plugin) {
 			$plugin = "{$plugin}.";
 		}
-		App::uses($job, "{$plugin}Lib/Job");
+
+		if (!class_exists($className)) {
+			App::uses($className, "{$plugin}Job");
+		}
 
 		if (empty($args)) {
-			return new $jobName();
+			return new $className();
 		}
 
 		if (!class_exists('ReflectionClass')) {
 			return null;
 		}
 
-		$ref = new ReflectionClass($jobName);
+		$ref = new ReflectionClass($className);
 		return $ref->newInstanceArgs($args);
 	}
 

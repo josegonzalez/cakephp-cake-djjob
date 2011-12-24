@@ -1,5 +1,5 @@
 <?php
-App::uses('CakeJob', 'CakeDjjob.Lib/Job');
+App::uses('CakeJob', 'CakeDjjob.Job');
 App::uses('DJJob', 'Djjob.Vendor');
 
 /**
