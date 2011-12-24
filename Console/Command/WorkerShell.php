@@ -35,22 +35,24 @@ function unserialize_jobs($className) {
  *
  * @package job_workers
  */
-class WorkerShell extends Shell {
+class WorkerShell extends AppShell {
+
+	public $tasks = array('CakeDjjob.Cleanup', 'CakeDjjob.Run', 'CakeDjjob.Status');
 
 /**
  * Override startup
  *
  * @access public
  */
-	function startup() {
+	public function startup() {
 		parent::startup();
 		ini_set('unserialize_callback_func', 'unserialize_jobs');
-		$connection = ConnectionManager::getDataSource($this->args['connection']);
+		$connection = ConnectionManager::getDataSource($this->params['connection']);
 
-		if ($this->args['type'] == 'mysql') {
+		if ($this->params['type'] == 'mysql') {
 			DJJob::configure(
 				implode(';', array(
-					"{$this->args['type']}:host={$connection->config['host']}",
+					"{$this->params['type']}:host={$connection->config['host']}",
 					"dbname={$connection->config['database']}",
 					"port={$connection->config['port']}",
 				)), array(
@@ -61,7 +63,7 @@ class WorkerShell extends Shell {
 		} else {
 			DJJob::configure(
 				implode(';', array(
-					"{$this->args['type']}:host={$connection->config['host']}",
+					"{$this->params['type']}:host={$connection->config['host']}",
 					"dbname={$connection->config['database']}",
 					"port={$connection->config['port']}",
 					"user={$connection->config['login']}",
@@ -69,85 +71,6 @@ class WorkerShell extends Shell {
 				))
 			);
 		}
-	}
-
-	function run() {
-		Configure::write('debug', $this->args['debug']);
-		if (empty($this->args['queue'])) {
-			$this->cakeError('error', array(array(
-				'code' => '', 'name' => '',
-				'message' => 'No queue set'
-			)));
-		}
-
-		$worker = new DJWorker(array(
-			"queue" => $this->args['queue'],
-			"count" => $this->args['count'],
-			"sleep" => $this->args['sleep'],
-			"max_attempts" => $this->args['max'],
-		));
-		$worker->start();
-	}
-
-	function status() {
-		Configure::write('debug', $this->args['debug']);
-		if (empty($this->args['queue'])) {
-			$this->cakeError('error', array(array(
-				'code' => '', 'name' => '',
-				'message' => 'No queue set'
-			)));
-		}
-
-		$status = DJJob::status($this->args['queue']);
-		foreach ($status as $name => $count) {
-			$this->out(sprintf("%s Jobs: %d", Inflector::humanize($name), $count));
-		}
-	}
-
-	function cleanup() {
-		Configure::write('debug', $this->args['debug']);
-
-		if ($this->params['action'] == 'clean') {
-			$column = 'failed_at';
-		} elseif ($this->params['action'] == 'unlock') {
-			$column = 'locked_at';
-		} else {
-			$this->cakeError('error', array(array(
-				'code' => '', 'name' => '',
-				'message' => 'No column to filter by is set'
-			)));
-		}
-
-		if (empty($this->args['date'])) {
-			$this->args['date'] = date('Y-m-d H:i:s');
-		} else {
-			$this->args['date'] = date('Y-m-d H:i:s', strtotime($this->args['date']));
-		}
-
-		$conditions = array(
-			$column . ' <=' => $this->args['date'],
-			'not' => array($column => null),
-		);
-		if (!empty($this->args['queue'])) {
-			$conditions['Job.queue'] = $this->args['queue'];
-		}
-
-		$JobModel = ClassRegistry::init('Job');
-		$jobs = $JobModel->find('all', compact('conditions'));
-		foreach ($jobs as $job) {
-			switch ($this->_action) {
-				case 'unlock':
-					$job['Job']['locked_at'] = null;
-					$job['Job']['locked_by'] = null;
-					if ($this->args['save']) $JobModel->save($job);
-				break;
-				case 'clean':
-					if ($this->args['save']) $JobModel->delete($job['Job']['id']);
-				break;
-			}
-		}
-
-		$this->out(sprintf('%d %s%s', count($jobs), ($this->args['save'])? '':'not', " {$this->_action}ed\n"));
 	}
 
 /**
@@ -166,13 +89,13 @@ class WorkerShell extends Shell {
 		$choice = strtolower($this->in(__d('cake_djjob', 'What would you like to do?'), array('R', 'S', 'C', 'Q')));
 		switch ($choice) {
 			case 'r':
-				$this->run();
+				$this->Run->execute();
 			break;
 			case 's':
-				$this->status();
+				$this->Status->execute();
 			break;
 			case 'c':
-				$this->cleanup();
+				$this->Cleanup->execute();
 			break;
 			case 'q':
 				exit(0);
@@ -191,10 +114,9 @@ class WorkerShell extends Shell {
  */
 	public function getOptionParser() {
 		$parser = parent::getOptionParser();
-		$parser->description(
+		return $parser->description(
 			__d('cake_djjob', 'The Worker Shell runs jobs created by the DJJob system.')
-		);
-		$parser->addOptions(array(
+		)->addOptions(array(
 			'connection' => array(
 				'help' => __('Set db config'),
 				'default' => 'default',
@@ -212,55 +134,16 @@ class WorkerShell extends Shell {
 				'help' => __('Queue <name> to pul jobs from'),
 				'default' => 'default',
 			),
-		));
-
-		$parser->addSubcommand('run', array(
+		))->addSubcommand('run', array(
 			'help' => __d('cake_djjob', 'runs jobs in the system'),
-			'parser' => array(
-				'options' => array(
-					'count' => array(
-						'help' => __('Run <number> of jobs before exiting (0 for unlimited)'),
-						'default' => $this->defaults['count'],
-					),
-					'sleep' => array(
-						'help' => __('Sleep <number> seconds after finding no jobs'),
-						'default' => 5,
-					),
-					'max' => array(
-						'help' => __('Max <number> of retries for a given job'),
-						'default' => 5,
-					),
-    			),
-			),
-		));
-
-		$parser->addSubcommand('status', array(
+			'parser' => $this->Run->getOptionParser()
+		))->addSubcommand('status', array(
 			'help' => __d('cake_djjob', 'returns the status of a job queue'),
-		));
-
-		$parser->addSubcommand('cleanup', array(
+			'parser' => $this->Status->getOptionParser()
+		))->addSubcommand('cleanup', array(
 			'help' => __d('cake_djjob', 'cleans a job queue'),
-			'parser' => array(
-				'options' => array(
-					'action' => array(
-						'help' => __('Action to perform on cleanup task'),
-						'default' => 'clean',
-						'choices' => array('clean', 'unlock')
-					),
-					'date' => array(
-						'help' => __('Date offset'),
-						'default' => null,
-					),
-					'save' => array(
-						'help' => __('Allow cleanup to modify database'),
-						'default' => 1,
-						'choices' => array(0, 1),
-					),
-    			),
-			),
+			'parser' => $this->Cleanup->getOptionParser()
 		));
-
-		return $parser;
 	}
 
 }
