@@ -38,7 +38,7 @@ class CakeDjjobBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	public function setup(&$Model, $config = array()) {
+	public function setup(Model $model, $config = array()) {
 		$this->settings = array_merge($this->settings, $config);
 		$connection = ConnectionManager::getDataSource($this->settings['connection']);
 

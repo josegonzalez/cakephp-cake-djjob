@@ -40,7 +40,7 @@ class CakeDjjobComponent extends Component {
  * @access public
  * @link http://book.cakephp.org/view/65/MVC-Class-Access-Within-Components
  */
-	public function initialize(&$Controller) {
+	public function initialize(Controller $controller) {
 		$connection = ConnectionManager::getDataSource($this->settings['connection']);
 
 		if ($this->settings['type'] == 'mysql') {
