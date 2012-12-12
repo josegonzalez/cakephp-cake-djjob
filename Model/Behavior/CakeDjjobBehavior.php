@@ -43,16 +43,7 @@ class CakeDjjobBehavior extends ModelBehavior {
 		$connection = ConnectionManager::getDataSource($this->settings['connection']);
 
 		if ($this->settings['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->settings['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
+			DJJob::setConnection($connection->getConnection());
 		} else {
 			DJJob::configure(
 				implode(';', array(

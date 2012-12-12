@@ -50,16 +50,7 @@ class WorkerShell extends AppShell {
 		$connection = ConnectionManager::getDataSource($this->params['connection']);
 
 		if ($this->params['type'] == 'mysql') {
-			DJJob::configure(
-				implode(';', array(
-					"{$this->params['type']}:host={$connection->config['host']}",
-					"dbname={$connection->config['database']}",
-					"port={$connection->config['port']}",
-				)), array(
-					'mysql_user' => $connection->config['login'],
-					'mysql_pass' => $connection->config['password']
-				)
-			);
+			DJJob::setConnection($connection->getConnection());
 		} else {
 			DJJob::configure(
 				implode(';', array(
