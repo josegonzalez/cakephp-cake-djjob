@@ -150,9 +150,10 @@ class CakeJob extends Object {
 	}
 
 /**
-* Loads a Component
+ * Loads a Component
  *
  * @param string $componentClass Name of model class to load
+ * @param array $settings array of settings
  * @return void
  * @access public
  **/
