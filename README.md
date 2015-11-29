@@ -1,18 +1,25 @@
-h1. Cake DJJob Plugin
+[![Build Status](https://img.shields.io/travis/josegonzalez/cakephp-cake-djjob/master.svg?style=flat-square)](https://travis-ci.org/josegonzalez/cakephp-cake-djjob) 
+[![Coverage Status](https://img.shields.io/coveralls/josegonzalez/cakephp-cake-djjob.svg?style=flat-square)](https://coveralls.io/r/josegonzalez/cakephp-cake-djjob?branch=master) 
+[![Total Downloads](https://img.shields.io/packagist/dt/josegonzalez/cakephp-cake-djjob.svg?style=flat-square)](https://packagist.org/packages/josegonzalez/cakephp-cake-djjob) 
+[![Latest Stable Version](https://img.shields.io/packagist/v/josegonzalez/cakephp-cake-djjob.svg?style=flat-square)](https://packagist.org/packages/josegonzalez/cakephp-cake-djjob) 
+[![Documentation Status](https://readthedocs.org/projects/cakephp-cake-djjob/badge/?version=latest&style=flat-square)](https://readthedocs.org/projects/cakephp-cake-djjob/?badge=latest)
+[![Gratipay](https://img.shields.io/gratipay/josegonzalez.svg?style=flat-square)](https://gratipay.com/~josegonzalez/)
+
+# Cake DJJob Plugin
 
 Quick and easy job queues, based on delayed_job
 
-h2. Background
+## Background
 
-"CakePackages":http://github.com/josegonzalez/cakepackages is the type of site that would do well with background processes. Rather than try to build - and fail - a job/worker system, I set out to wrap an existing system.
+[CakePackages](http://github.com/josegonzalez/cakepackages) is the type of site that would do well with background processes. Rather than try to build - and fail - a job/worker system, I set out to wrap an existing system.
 
-I am aware of a few plugins for cakephp, notably the "queue":https://github.com/davidpersson/queue plugin by David Persson, and the "cron-mailer":https://github.com/kalt/cron-mailer plugin by Pierre-Emmanuel Fringant. However, I don't wish to run and maintain yet another service, and my cron tasks aren't email-based at all. The other thing was the lack of documentation for David's plugin, and I am hesitant to familiarize myself with so many tools at once.
+I am aware of a few plugins for cakephp, notably the [queue](https://github.com/davidpersson/queue) plugin by David Persson, and the [cron-mailer](https://github.com/kalt/cron-mailer) plugin by Pierre-Emmanuel Fringant. However, I don't wish to run and maintain yet another service, and my cron tasks aren't email-based at all. The other thing was the lack of documentation for David's plugin, and I am hesitant to familiarize myself with so many tools at once.
 
-At "SeatGeek":http://seatgeek.com, we use a "PHP port":http://github.com/seatgeek/djjob of "delayed_job":https://github.com/collectiveidea/delayed_job, which works very well in production. It's a neat little set of classes that abstracts away most of the pain of creating new jobs and workers. Unfortunately, the only system I've ever used it in was Symfony (you'll notice we include a sample Symfony task with the package).
+At [SeatGeek](http://seatgeek.com), we use a [PHP port](http://github.com/seatgeek/djjob) of [delayed_job](https://github.com/collectiveidea/delayed_job), which works very well in production. It's a neat little set of classes that abstracts away most of the pain of creating new jobs and workers. Unfortunately, the only system I've ever used it in was Symfony (you'll notice we include a sample Symfony task with the package).
 
 So here this is, Cake DJJob. Use it and abuse it to create Jobs/workers whenever necessary :)
 
-h2. Requirements
+## Requirements
 
 * CakePHP 1.3
 * Patience
@@ -20,63 +27,71 @@ h2. Requirements
 * PDO (Ships with PHP >= 5.1)
 * (Optional) PCNTL library
 
-h2. Installation
+## Installation
 
-You are required to install both @djjob@ and @cake_djjob@. Note that you'll need a @jobs@ table just like the one included with @djjob@. A @cake_schema@ file is forthcoming.
+You are required to install both `djjob` and `cake_djjob`. Note that you'll need a `jobs` table just like the one included with `djjob`. A `cake_schema` file is forthcoming.
 
-h3. DJJob Installation
+### DJJob Installation
 
 _[Manual]_
 
-# Download this: http://github.com/seatgeek/djjob/zipball/master
-# Unzip that download.
-# Copy the resulting folder to app/plugins
-# Rename the folder you just copied to @Djjob/Vendor@
+- Download this: http://github.com/seatgeek/djjob/zipball/master
+- Unzip that download.
+- Copy the resulting folder to app/plugins
+- Rename the folder you just copied to `Djjob/Vendor`
 
 _[GIT Submodule]_
 
 In your app directory type:
-<pre><code>git submodule add git://github.com/seatgeek/djjob.git Plugin/Djjob/Vendor
+```
+git submodule add git://github.com/seatgeek/djjob.git Plugin/Djjob/Vendor
 git submodule init
 git submodule update
-</code></pre>
+```
 
 _[GIT Clone]_
 
 In your plugin directory type
-<pre><code>git clone git://github.com/seatgeek/djjob.git Djjob/Vendor</code></pre>
+```
+git clone git://github.com/seatgeek/djjob.git Djjob/Vendor
+```
 
 h3. Cake DJJob Installation
 
 _[Manual]_
 
-# Download this: http://github.com/josegonzalez/cake_djjob/zipball/master
-# Unzip that download.
-# Copy the resulting folder to app/Plugin
-# Rename the folder you just copied to @CakeDjjob@
+- Download this: http://github.com/josegonzalez/cake_djjob/zipball/master
+- Unzip that download.
+- Copy the resulting folder to app/Plugin
+- Rename the folder you just copied to `CakeDjjob`
 
 _[GIT Submodule]_
 
 In your app directory type:
-<pre><code>git submodule add git://github.com/josegonzalez/cake_djjob.git Plugin/CakeDjjob
+```
+git submodule add git://github.com/josegonzalez/cake_djjob.git Plugin/CakeDjjob
 git submodule init
 git submodule update
-</code></pre>
+
+```
 
 _[GIT Clone]_
 
 In your Plugin directory type
-<pre><code>git clone git://github.com/josegonzalez/cake_djjob.git CakeDjjob</code></pre>
+```
+git clone git://github.com/josegonzalez/cake_djjob.git CakeDjjob
+```
 
-h2. Usage
+## Usage
 
-h3. Creating New Jobs
+### Creating New Jobs
 
-You can create new jobs in the @Lib/Job@ folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the @CakeDjjob@ plugin contains a @CakeDjjob_TestJob@ in @Lib/Job/TestJob.php@. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
+You can create new jobs in the `Lib/Job` folder of your application or of any plugin. When creating plugin jobs, the plugin name must be in the job class name, but not the job class file. For example, the `CakeDjjob` plugin contains a `CakeDjjob_TestJob` in `Lib/Job/TestJob.php`. All plugins must be separated from the job classname using an underscore, and there can only be one underscore in a classname. This is so you can use jobs from plugins as well as from the application.
 
-Jobs respond to a @perform()@ method, as in "djjob":http://github.com/seatgeek/djjob. In @CakeDjjob@, all jobs should extend the @CakeJob@ class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's @ForgotPasswordJob@ might be composed as follows:
+Jobs respond to a `perform()` method, as in [djjob](http://github.com/seatgeek/djjob). In `CakeDjjob`, all jobs should extend the `CakeJob` class. This is not required, but it allows for increased base functionality in your jobs. For example, an application's `ForgotPasswordJob` might be composed as follows:
 
-<pre><code><?php
+```php
+<?php
 class ForgotPasswordJob extends CakeJob {
 
     var $email = null;
@@ -110,7 +125,7 @@ class ForgotPasswordJob extends CakeJob {
 
 }
 ?>
-</code></pre>
+```
 
 Extending the @CakeJob@ also allows the usage of the following methods:
 
@@ -130,11 +145,12 @@ Extending the @CakeJob@ also allows the usage of the following methods:
 By extending @CakeJob@, you get an instant base off of which writing jobs will be quick and easy.
 
 
-h3. Enqueuing Jobs
+### Enqueuing Jobs
 
 You can attach the @CakeDjjob@ Component to your controller like so:
 
-<pre><code><?php
+```
+<?php
 App::uses('ForgotPasswordJob', 'Lib/Job');
 
 class UsersController extends AppController {
@@ -150,11 +166,13 @@ class UsersController extends AppController {
     }
 
 }
-?></code></pre>
+?>
+```
 
 It is also possible to queue jobs from a Model by attaching the included @CakeDjjob@ behavior:
 
-<pre><code><?php
+```
+<?php
 App::uses('ForgotPasswordJob', 'Lib/Job');
 
 class User extends AppModel {
@@ -173,9 +191,10 @@ class User extends AppModel {
         return $this->bulkEnqueue($jobs);
     }
 }
-?></code></pre>
+?>
+```
 
-h3. Optional way to load jobs into an object
+### Optional way to load jobs into an object
 
 - Requires (PHP 5 >= 5.1.3) and ReflectionClass when loading jobs with arguments
 - This is an alternative to manually importing the Job using App::uses().
@@ -183,7 +202,8 @@ h3. Optional way to load jobs into an object
     - It assumes that the Job will be imported from /app/Lib/Job
     - You can pass it as many parameters as needed as they are simply passed through to your Job
 
-<pre><code><?php
+```
+<?php
 class User extends AppModel {
     public $actsAs = array('CakeDjjob.CakeDjjob');
 
@@ -200,15 +220,18 @@ class User extends AppModel {
         return $this->bulkEnqueue($jobs);
     }
 }
-?></code></pre>
+?>
+```
 
-h3. Running Jobs
+### Running Jobs
 
 Included with this plugin is a task to run jobs.
 
-<pre><code>cake worker run</code></pre>
+```
+cake worker run
+```
 
-The above statement will run a single worker on the default queue forever. It can be added to your cron or by some other process manager such as "God":http://god.rubyforge.org/. The following params are available for the worker:
+The above statement will run a single worker on the default queue forever. It can be added to your cron or by some other process manager such as [God](http://god.rubyforge.org/). The following params are available for the worker:
 
 * --connection <config>
 ** set db config <config>. default config: default
@@ -225,13 +248,15 @@ The above statement will run a single worker on the default queue forever. It ca
 * --debug <number>
 ** debug <level> to set for worker. default level: 0
 
-h3. Cleaning job queues
+### Cleaning job queues
 
 It's possible to clean a particular job queue, by either resetting locked jobs or deleting failed jobs:
 
-<pre><code>cake worker cleanup</code></pre>
+```
+cake worker cleanup
+```
 
-This task can take the @connection@, @type@, @queue@, and @debug@ arguments, as well as a few custom ones:
+This task can take the `connection`, `type`, `queue`, and `debug` arguments, as well as a few custom ones:
 
 * --action <string>
 ** action to perform on cleanup task. default value: null
@@ -240,15 +265,17 @@ This task can take the @connection@, @type@, @queue@, and @debug@ arguments, as 
 * --save <boolean>
 ** allow cleanup to modify database. default value: 1
 
-h3. Retrieving the status of a job queue
+### Retrieving the status of a job queue
 
 If you need to get the status of a particular job queue, you can call the status method on the task:
 
-<pre><code>cake worker status</code></pre>
+```
+cake worker status
+```
 
-This task can take the @connection@, @type@, @queue@, and @debug@ arguments as well.
+This task can take the `connection`, `type`, `queue`, and `debug` arguments as well.
 
-h2. TODO
+## TODO
 
 * Allow alternative methods of plugin prefixing
 * Circumvent class-loading via a custom-serialization method
@@ -258,7 +285,7 @@ h2. TODO
 * More documentation (DeferredEmail class)
 * -Task to allow creation of jobs from shells-
 
-h2. License
+## License
 
 Copyright (c) 2011 Jose Diaz-Gonzalez
 
