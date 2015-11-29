@@ -5,7 +5,6 @@ class M4e12028cb08847248aed12bccbdd56cb extends CakeMigration {
  * Migration description
  *
  * @var string
- * @access public
  */
 	public $description = '';
 
@@ -13,7 +12,6 @@ class M4e12028cb08847248aed12bccbdd56cb extends CakeMigration {
  * Actions to be performed
  *
  * @var array $migration
- * @access public
  */
 	public $migration = array(
 		'up' => array(),
@@ -23,9 +21,8 @@ class M4e12028cb08847248aed12bccbdd56cb extends CakeMigration {
 /**
  * Before migration callback
  *
- * @param string $direction, up or down direction of migration process
- * @return boolean Should process continue
- * @access public
+ * @param string $direction up or down direction of migration process
+ * @return bool Should process continue
  */
 	public function before($direction) {
 		return true;
@@ -34,9 +31,8 @@ class M4e12028cb08847248aed12bccbdd56cb extends CakeMigration {
 /**
  * After migration callback
  *
- * @param string $direction, up or down direction of migration process
- * @return boolean Should process continue
- * @access public
+ * @param string $direction up or down direction of migration process
+ * @return bool Should process continue
  */
 	public function after($direction) {
 		$Job = $this->generateModel('Job');
@@ -49,4 +45,3 @@ class M4e12028cb08847248aed12bccbdd56cb extends CakeMigration {
 		return false;
 	}
 }
-?>

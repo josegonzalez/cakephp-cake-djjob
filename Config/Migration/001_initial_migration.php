@@ -5,7 +5,6 @@ class M4db0e246acd4493eae330183cbdd56cb extends CakeMigration {
  * Migration description
  *
  * @var string
- * @access public
  */
 	public $description = 'Initial migration of jobs table';
 
@@ -13,22 +12,21 @@ class M4db0e246acd4493eae330183cbdd56cb extends CakeMigration {
  * Actions to be performed
  *
  * @var array $migration
- * @access public
  */
 	public $migration = array(
 		'up' => array(
 			'create_table' => array(
 				'jobs' => array(
-					'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
-					'handler' => array('type' => 'text', 'null' => false, 'default' => NULL, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+					'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
+					'handler' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 					'queue' => array('type' => 'string', 'null' => false, 'default' => 'default', 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 					'attempts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10),
-					'run_at' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
-					'locked_at' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
-					'locked_by' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-					'failed_at' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
-					'error' => array('type' => 'text', 'null' => true, 'default' => NULL, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-					'created_at' => array('type' => 'datetime', 'null' => false, 'default' => NULL),
+					'run_at' => array('type' => 'datetime', 'null' => true, 'default' => null),
+					'locked_at' => array('type' => 'datetime', 'null' => true, 'default' => null),
+					'locked_by' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+					'failed_at' => array('type' => 'datetime', 'null' => true, 'default' => null),
+					'error' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+					'created_at' => array('type' => 'datetime', 'null' => false, 'default' => null),
 					'indexes' => array(
 						'PRIMARY' => array('column' => 'id', 'unique' => 1),
 					),
@@ -46,9 +44,8 @@ class M4db0e246acd4493eae330183cbdd56cb extends CakeMigration {
 /**
  * Before migration callback
  *
- * @param string $direction, up or down direction of migration process
- * @return boolean Should process continue
- * @access public
+ * @param string $direction up or down direction of migration process
+ * @return bool Should process continue
  */
 	public function before($direction) {
 		return true;
@@ -57,9 +54,8 @@ class M4db0e246acd4493eae330183cbdd56cb extends CakeMigration {
 /**
  * After migration callback
  *
- * @param string $direction, up or down direction of migration process
- * @return boolean Should process continue
- * @access public
+ * @param string $direction up or down direction of migration process
+ * @return bool Should process continue
  */
 	public function after($direction) {
 		return true;

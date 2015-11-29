@@ -5,4 +5,3 @@ $map = array(
 	2 => array(
 		'002_utf8_character_set' => 'M4e12028cb08847248aed12bccbdd56cb'),
 );
-?>
