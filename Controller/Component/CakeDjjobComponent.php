@@ -17,7 +17,7 @@ App::uses('DJJob', 'Djjob.Vendor');
 class CakeDjjobComponent extends Component {
 
 	public $settings = array(
-		'connection'=> 'default',
+		'connection' => 'default',
 		'type' => 'mysql',
 	);
 
@@ -35,7 +35,7 @@ class CakeDjjobComponent extends Component {
 /**
  * Called before the Controller::beforeFilter().
  *
- * @param object  A reference to the controller
+ * @param object A reference to the controller
  * @return void
  * @access public
  * @link http://book.cakephp.org/view/65/MVC-Class-Access-Within-Components
@@ -60,13 +60,10 @@ class CakeDjjobComponent extends Component {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
- * @param string $jobName Name of job being loaded
- * @param mixed $argument Some argument to pass to the job
- * @param mixed ... etc.
  * @return mixed Job instance if available, null otherwise
  */
 	public function load() {
@@ -105,11 +102,11 @@ class CakeDjjobComponent extends Component {
  *
  * @param Job $job
  * @param string $queue
- * @param string $run_at
- * @return boolean True if enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if enqueue is successful, false on failure
  */
-	public function enqueue($job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
+	public function enqueue($job, $queue = "default", $runAt = null) {
+		return DJJob::enqueue($job, $queue, $runAt);
 	}
 
 /**
@@ -117,11 +114,11 @@ class CakeDjjobComponent extends Component {
  *
  * @param array $jobs
  * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if bulk enqueue is successful, false on failure
  */
-	public function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	public function bulkEnqueue($jobs, $queue = "default", $runAt = null) {
+		return DJJob::bulkEnqueue($jobs, $queue, $runAt);
 	}
 
 /**

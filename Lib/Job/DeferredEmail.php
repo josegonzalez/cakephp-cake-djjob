@@ -18,14 +18,14 @@ class DeferredEmail extends CakeJob {
 /**
  * Whether email was sent or not
  *
- * @var boolean
+ * @var bool
  */
 	protected $_sent = false;
 
 /**
  * True if email was cancelled, false otherwise
  *
- * @var boolean
+ * @var bool
  */
 	protected $_canceled = false;
 
@@ -46,7 +46,7 @@ class DeferredEmail extends CakeJob {
 /**
  * Test mode for emails
  *
- * @var boolean
+ * @var bool
  */
 	protected $_test = false;
 
@@ -67,7 +67,7 @@ class DeferredEmail extends CakeJob {
 /**
  * Constructs the initial email object
  *
- * @param string $email 
+ * @param string $email an email to send to
  * @param array $vars Array of variables for the email
  */
 	public function __construct($email, $vars = array()) {
@@ -108,11 +108,15 @@ class DeferredEmail extends CakeJob {
 
 		$this->build(); // perform expensive work as late as possible
 
-		if ($this->_canceled) return false;
+		if ($this->_canceled) {
+			return false;
+		}
 
 		// Convert booleans to ints, otherwise the signature will be incorrect
 		foreach ($this->_vars as &$var)
-			if (is_bool($var)) $var = ($var) ? 1 : 0;
+			if (is_bool($var)) {
+				$var = ($var) ? 1 : 0;
+			}
 
 		$this->_vars['to'] = $this->_email;
 		if ($this->_test) {
@@ -159,12 +163,12 @@ class DeferredEmail extends CakeJob {
 /**
  * Enables requeing of an email
  *
- * @param datetime $send_at MySQL-compatible datetime
+ * @param datetime $sendAt MySQL-compatible datetime
  * @param string $queue Name of queue
  * @return void
  */
-	public function sendLater($send_at = null, $queue = "email") {
-		DJJob::enqueue($this, $queue, $send_at);
+	public function sendLater($sendAt = null, $queue = "email") {
+		DJJob::enqueue($this, $queue, $sendAt);
 	}
 
 /**

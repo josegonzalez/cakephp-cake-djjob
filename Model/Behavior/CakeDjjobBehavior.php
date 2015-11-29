@@ -5,7 +5,7 @@ App::uses('DJJob', 'Djjob.Vendor');
 
 /**
  * CakeDjjob Model Behavior
- * 
+ *
  * Wrapper around DJJob library
  *
  * @copyright    Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
@@ -26,14 +26,14 @@ class CakeDjjobBehavior extends ModelBehavior {
  * @see Model::$alias
  */
 	public $settings = array(
-		'connection'=> 'default',
+		'connection' => 'default',
 		'type' => 'mysql',
 	);
 
 /**
  * Initiate CakeDjjob Behavior
  *
- * @param object $model
+ * @param Model $Model Model using the behavior
  * @param array $config
  * @return void
  * @access public
@@ -59,17 +59,17 @@ class CakeDjjobBehavior extends ModelBehavior {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
- * @param object $model Model instance calling this method
+ * @param Model $Model Model using the behavior
  * @param string $jobName Name of job being loaded
  * @param mixed $argument Some argument to pass to the job
  * @param mixed ... etc.
  * @return mixed Job instance if available, null otherwise
  */
-	public function load(&$Model) {
+	public function load(Model $Model) {
 		$args = func_get_args();
 		array_shift($args);
 
@@ -105,34 +105,37 @@ class CakeDjjobBehavior extends ModelBehavior {
  * Note that all Jobs enqueued using this system must extend the base CakeJob
  * class which is included in this plugin
  *
+ * @param Model $Model Model using the behavior
  * @param Job $job
  * @param string $queue
- * @param string $run_at
- * @return boolean True if enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if enqueue is successful, false on failure
  */
-	public function enqueue(&$Model, $job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
+	public function enqueue(Model $Model, $job, $queue = "default", $runAt = null) {
+		return DJJob::enqueue($job, $queue, $runAt);
 	}
 
 /**
  * Bulk Enqueues Jobs using DJJob
  *
+ * @param Model $Model Model using the behavior
  * @param array $jobs
  * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if bulk enqueue is successful, false on failure
  */
-	public function bulkEnqueue(&$Model, $jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	public function bulkEnqueue(Model $Model, $jobs, $queue = "default", $runAt = null) {
+		return DJJob::bulkEnqueue($jobs, $queue, $runAt);
 	}
 
 /**
  * Returns an array containing the status of a given queue
  *
+ * @param Model $Model Model using the behavior
  * @param string $queue
  * @return array
  **/
-	public function status(&$Model, $queue = "default") {
+	public function status(Model $Model, $queue = "default") {
 		return DJJob::status($queue);
 	}
 

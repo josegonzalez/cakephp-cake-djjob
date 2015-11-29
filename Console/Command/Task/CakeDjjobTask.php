@@ -6,7 +6,7 @@ App::uses('DJJob', 'Djjob.Vendor');
 
 /**
  * CakeDjjob Task
- * 
+ *
  * Wrapper around DJJob library for shells
  *
  * @copyright     Copyright 2011, Jose Diaz-Gonzalez. (http://josediazgonzalez.com)
@@ -27,7 +27,7 @@ class CakeDjjobTask extends AppShell {
  * @see Model::$alias
  */
 	var $settings = array(
-		'connection'=> 'default',
+		'connection' => 'default',
 		'type' => 'mysql',
 	);
 
@@ -60,13 +60,10 @@ class CakeDjjobTask extends AppShell {
 
 /**
  * Returns a job
- * 
+ *
  * Auto imports and passes through the constructor parameters to newly created job
  * Note: (PHP 5 >= 5.1.3) - requires ReflectionClass if passing arguments
  *
- * @param string $jobName Name of job being loaded
- * @param mixed $argument Some argument to pass to the job
- * @param mixed ... etc.
  * @return mixed Job instance if available, null otherwise
  */
 	function load() {
@@ -105,11 +102,11 @@ class CakeDjjobTask extends AppShell {
  *
  * @param Job $job
  * @param string $queue
- * @param string $run_at
- * @return boolean True if enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if enqueue is successful, false on failure
  */
-	function enqueue($job, $queue = "default", $run_at = null) {
-		return DJJob::enqueue($job, $queue, $run_at);
+	function enqueue($job, $queue = "default", $runAt = null) {
+		return DJJob::enqueue($job, $queue, $runAt);
 	}
 
 /**
@@ -117,11 +114,11 @@ class CakeDjjobTask extends AppShell {
  *
  * @param array $jobs
  * @param string $queue
- * @param string $run_at
- * @return boolean True if bulk enqueue is successful, false on failure
+ * @param string $runAt
+ * @return bool True if bulk enqueue is successful, false on failure
  */
-	function bulkEnqueue($jobs, $queue = "default", $run_at = null) {
-		return DJJob::bulkEnqueue($jobs, $queue, $run_at);
+	function bulkEnqueue($jobs, $queue = "default", $runAt = null) {
+		return DJJob::bulkEnqueue($jobs, $queue, $runAt);
 	}
 
 /**

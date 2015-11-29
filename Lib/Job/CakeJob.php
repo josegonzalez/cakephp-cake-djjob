@@ -18,7 +18,7 @@ class CakeJob extends Object {
  *  stdout:         filehandle  Standard output stream.
  *  stderr:         filehandle  Standard error stream.
  *  modelNames:     array       An array containing the class names of the models this controller uses.
- *  persistModel:   boolean     Used to create cached instances of models a controller uses.
+ *  persistModel:   bool        Used to create cached instances of models a controller uses.
  *  controller:     object      Internal reference to a dummy controller
  *
  * @var string
@@ -35,7 +35,7 @@ class CakeJob extends Object {
  * @param string $modelClass Name of model class to load
  * @param mixed $id Initial ID the instanced model class should have
  * @return mixed true when single model found and instance created, error returned if model not found.
- * @access public
+ * @return bool
  */
 	public function loadModel($modelClass, $id = null) {
 		$cached = false;
@@ -81,7 +81,7 @@ class CakeJob extends Object {
  * @param string $controllerClass Name of model class to load
  * @param array $modelNames Array of models to load onto controller
  * @return mixed true when single controller found and instance created, error returned if controller not found.
- * @access public
+ * @return bool
  **/
 	public function loadController($controllerClass = 'Controller', $modelNames = array()) {
 		list($pluginName, $controllerClass) = pluginSplit($controllerClass, true, null);
@@ -188,8 +188,8 @@ class CakeJob extends Object {
  * are passed outputs just a newline.
  *
  * @param mixed $message A string or a an array of strings to output
- * @param integer $newlines Number of newlines to append
- * @return integer Returns the number of bytes returned from writing to stdout.
+ * @param int $newlines Number of newlines to append
+ * @return int Returns the number of bytes returned from writing to stdout.
  */
 	public function out($message = null, $newlines = 1) {
 		if (is_array($message)) {
@@ -203,8 +203,8 @@ class CakeJob extends Object {
  * are passed outputs just a newline.
  *
  * @param mixed $message A string or a an array of strings to output
- * @param integer $newlines Number of newlines to append
- * @access public
+ * @param int $newlines Number of newlines to append
+ * @return void
  */
 	public function err($message = null, $newlines = 1) {
 		if (is_array($message)) {
@@ -217,8 +217,8 @@ class CakeJob extends Object {
  * Outputs to the stdout filehandle.
  *
  * @param string $string String to output.
- * @param boolean $newline If true, the outputs gets an added newline.
- * @return integer Returns the number of bytes output to stdout.
+ * @param bool $newline If true, the outputs gets an added newline.
+ * @return int Returns the number of bytes output to stdout.
  */
 	public function stdout($string, $newline = true) {
 		if (empty($this->_internals['stdout'])) {
@@ -227,16 +227,15 @@ class CakeJob extends Object {
 
 		if ($newline) {
 			return fwrite($this->_internals['stdout'], $string . "\n");
-		} else {
-			return fwrite($this->_internals['stdout'], $string);
 		}
+		return fwrite($this->_internals['stdout'], $string);
 	}
 
 /**
  * Outputs to the stderr filehandle.
  *
  * @param string $string Error text to output.
- * @access public
+ * @return void
  */
 	public function stderr($string) {
 		if (empty($this->_internals['stderr'])) {
@@ -249,18 +248,21 @@ class CakeJob extends Object {
 /**
  * Returns a single or multiple linefeeds sequences.
  *
- * @param integer $multiplier Number of times the linefeed sequence should be repeated
+ * @param int $multiplier Number of times the linefeed sequence should be repeated
  * @return string
  */
 	public function nl($multiplier = 1, $print = false) {
-		if ($print) return $this->stdout(str_repeat("\n", $multiplier), false);
+		if ($print) {
+			return $this->stdout(str_repeat("\n", $multiplier), false);
+		}
 		return str_repeat("\n", $multiplier);
 	}
 
 /**
  * Outputs a series of minus characters to the standard output, acts as a visual separator.
  *
- * @param integer $newlines Number of newlines to pre- and append
+ * @param int $newlines Number of newlines to pre- and append
+ * @return  void [<description>]
  */
 	public function hr($newlines = 0) {
 		$this->out(null, $newlines);

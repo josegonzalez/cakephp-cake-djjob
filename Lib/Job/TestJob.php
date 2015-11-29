@@ -3,7 +3,12 @@ App::uses('CakeJob', 'CakeDjjob.Job');
 
 class CakeDjjob_TestJob extends CakeJob {
 
-	function perform() {
+/**
+ * Runs a test job
+ *
+ * @return void
+ **/
+	public function perform() {
 		$this->out('Test Job');
 
 		$this->out('Loading Job Model');
